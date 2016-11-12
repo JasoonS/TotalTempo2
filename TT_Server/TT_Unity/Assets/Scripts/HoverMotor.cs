@@ -10,30 +10,28 @@ public class HoverMotor : MonoBehaviour
 {
     //TODO:: use a layer mask to increase efficiency, and prevent accidental hits.
     //TODO:: experiment with using Vector3.down vs (thruster.up * 1)
-
     public float HoverForce = 100.0f;
     public float HoverHeight = 4.0f;
-    public float AirTimeGravity = 1000.0f;
+    public float FloatHeight = 8.0f;
     public float Speed = 200.0f;
     public float BackwardsSpeed = 100.0f;
     public float TurnSpeed = 80f;
+    public float MaxDrag = 4f;
+    public float TrackSuction = 4f;
     public float JumpThrust = 5000;
-    public float suctionForce = 50;
 
     public Transform[] Thrusters;
 
+    // TODO:: is this used at all anymore??
     public float MaxSpeed = 36.80006f;
-
-    //public float CurrentSteerAngle { get { return m_SteerAngle; } }
 
     public float CurrentSpeed { get { return CarRigidBody.velocity.magnitude * 2.23693629f; } }
 
     public Transform Centre;
-    public Transform Body;
 
     Rigidbody CarRigidBody;
 
-    private int BodyLayerMask;
+    private int TrackMask;
 
     float maxSpeed;
 
@@ -51,6 +49,10 @@ public class HoverMotor : MonoBehaviour
     private float powerInput = 0.0f;
     private float turnInput = 0.0f;
 
+    private float _distanceRatio;
+    private float _amountOverThrustors;
+    private float _aboveThrusterDistance;
+
     void Start()
     {
         spawnListener = new UnityAction(Spawn);
@@ -59,11 +61,13 @@ public class HoverMotor : MonoBehaviour
 
         _waypointFollow = GetComponent<FollowWayPoint>();
 
-        //BodyLayerMask = 1 << LayerMask.NameToLayer("CarBody");
-        BodyLayerMask = 1 << LayerMask.NameToLayer("Track");
+        _aboveThrusterDistance = FloatHeight - HoverHeight;
+
+        //TrackMask = 1 << LayerMask.NameToLayer("CarBody");
+        TrackMask = 1 << LayerMask.NameToLayer("Track");
 
         _setToSpawn = false;
-        //BodyLayerMask = ~BodyLayerMask;
+        //TrackMask = ~TrackMask;
         EventManager.StartListening(id, spawnListener);
     }
 
@@ -82,36 +86,96 @@ public class HoverMotor : MonoBehaviour
     {
         RaycastHit hit;
 
-        if (Physics.Raycast(Centre.position, Vector3.down, out hit, HoverHeight, BodyLayerMask))
+        if (Physics.Raycast(Centre.position, Vector3.down, out hit, HoverHeight, TrackMask))
         {
             CarRigidBody.AddForce(Vector3.up * JumpThrust);
         }
     }
 
+    void FixedUpdate()
+    {
+        RaycastHit hit;
+
+      //  float ratioSqrd;
+
+       // move vehicle with force relative to track.
+       if (Physics.Raycast(Centre.position, -Centre.up, out hit, FloatHeight, TrackMask))
+       {
+           //float floatRatio = Mathf.Pow((1.0f - (hit.distance / FloatHeight)), 2);
+           _distanceRatio = (1.0f - (hit.distance / FloatHeight));
+           if (hit.distance > HoverHeight)
+           {
+               _amountOverThrustors = (hit.distance - HoverHeight) / _aboveThrusterDistance;
+           }
+
+          //  ratioSqrd = _distanceRatio * _distanceRatio;
+
+           CarRigidBody.AddRelativeForce(_distanceRatio * Vector3.forward * ((powerInput > 0) ? powerInput * Speed * 4 : powerInput * BackwardsSpeed * 4));
+
+           CarRigidBody.AddRelativeTorque(0f, _distanceRatio * turnInput * TurnSpeed, 0f);
+
+           CarRigidBody.drag = _distanceRatio * MaxDrag;
+       }
+       else
+       {
+          CarRigidBody.drag = 0.01f;
+           _distanceRatio = 1f;
+       }
+
+       foreach (Transform thruster in Thrusters)
+       {
+           if (Physics.Raycast(thruster.position, -thruster.up, out hit, HoverHeight, TrackMask))
+           {
+               CarRigidBody.AddForceAtPosition(Vector3.up * HoverForce * Mathf.Pow((1.0f - (hit.distance / HoverHeight)), 2), thruster.position);
+           } else
+           {
+               CarRigidBody.AddForceAtPosition(Vector3.down * HoverForce * _amountOverThrustors * TrackSuction, thruster.position);
+           }
+       }
+
+       if (!Physics.Raycast(Centre.position, -Centre.up, out hit, 2000, TrackMask))
+       {
+           if (!_setToSpawn)
+           {
+               _setToSpawn = true;
+               // TODO:: implement a static metronome
+               Metronome.addSpawner(id);
+           }
+       }
+    }
+
+    private void Spawn()
+    {
+        //Debug.Log("Spawn called for: " + id);
+        RaycastHit hit;
+        if (!Physics.Raycast(Centre.position, -Centre.up, out hit, 20, TrackMask))
+        {
+            CarRigidBody.velocity = Vector3.zero;
+            _waypointFollow.getSpawnPoint(CarRigidBody.transform);
+        }
+        _setToSpawn = false;
+    }
+
+    // Gizmo's
     void OnDrawGizmos()
     {
         RaycastHit hit;
 
         foreach (Transform thruster in Thrusters)
         {
-            // draw green if at/below hover height, otherwise red.
-
-            if (Physics.Raycast(thruster.position, thruster.up * -1, out hit, HoverHeight, BodyLayerMask))
+            if (Physics.Raycast(thruster.position, thruster.up * -1, out hit, HoverHeight, TrackMask))
             {
                 Gizmos.color = Color.green;
                 Gizmos.DrawLine(thruster.position, hit.point);
                 Gizmos.DrawSphere(hit.point, 0.5f);
             }
-
             else
             {
                 Gizmos.color = Color.red;
                 Gizmos.DrawLine(thruster.position, thruster.position - Vector3.up * HoverHeight);
             }
 
-            // draw green if at/below hover height, otherwise red.
-
-            if (Physics.Raycast(thruster.position, Body.up, out hit, HoverHeight, BodyLayerMask))
+            if (Physics.Raycast(thruster.position, Centre.up, out hit, HoverHeight, TrackMask))
             {
                 Gizmos.color = Color.red;
                 Gizmos.DrawLine(thruster.position, hit.point);
@@ -120,118 +184,8 @@ public class HoverMotor : MonoBehaviour
             else
             {
                 Gizmos.color = Color.yellow;
-                Gizmos.DrawLine(thruster.position, thruster.position - Body.up * HoverHeight);
-            }
-
-            //eulerAngles
-        }
-    }
-
-    void FixedUpdate()
-    {
-        Debug.Log("Start HM");
-        RaycastHit hit;
-
-        //Vertical thrusters
-
-        foreach (Transform thruster in Thrusters)
-        {
-            // TODO :: add some sort of control for flipping upside down, or change the
-            // angle at which the hover opperates, or use multiple types of raycasts etc.
-            // basically any way to make the care not freak out when going around curves.
-
-            if (Physics.Raycast(thruster.position, -thruster.up, out hit, HoverHeight, BodyLayerMask))
-            {
-                //NOTE:: I added the square to the scalar because it was sometimes tipping over.
-
-                CarRigidBody.AddForceAtPosition(Vector3.up * HoverForce * Mathf.Pow((1.0f - (hit.distance / HoverHeight)), 2), thruster.position);
-
-                //TODO:: make this more efficient, no need to recalculate on each thrustor....
-
-                //CarRigidBody.drag = 4;
-
-                //carRigidBody.mass = 500;
-            }
-            // ADD suction force - doesn't make physics nice... (my opinion)
-            //else if (Physics.Raycast(thruster.position, -thruster.up, out hit, HoverHeight + 1, BodyLayerMask))
-            //{
-
-            //    CarRigidBody.AddForceAtPosition( - Vector3.up * suctionForce, thruster.position);
-            //}
-            else
-            {
-                //NOTE:: this is a hack, should rather examin the gravity carefully.
-
-                //CarRigidBody.AddForceAtPosition(Vector3.down * AirTimeGravity, thruster.position);
-                //CarRigidBody.drag = 0;
-
-                //carRigidBody.mass = 8000;
+                Gizmos.DrawLine(thruster.position, thruster.position - Centre.up * HoverHeight);
             }
         }
-
-        if (!Physics.Raycast(Centre.position, -Centre.up, out hit, 2000, BodyLayerMask))
-        {
-            if (!_setToSpawn)
-            {
-                _setToSpawn = true;
-                // TODO:: implement a static metronome
-                Metronome.addSpawner(id);
-            }
-        }
-
-        //********
-        //PLEASE DONT DELETE THE BELLOW SEGMENT!!!
-        //********
-        //IT IS USEFULL FOR DEBUGGING
-        //********
-        //if (maxSpeed < carRigidBody.velocity.magnitude)
-        //{
-        //    Debug.Log("The speed is:");
-        //    maxSpeed = carRigidBody.velocity.magnitude;
-        //    Debug.Log(maxSpeed);
-        //}
-
-
-
-
-
-        //RaycastHit hit;
-
-        // TODO:: REMOVE:: *4: the *4 is just a temporary tweak.
-
-        if (Math.Abs(powerInput) < 0.01f)
-        {
-            CarRigidBody.drag = 1;
-        }
-        else
-        {
-            CarRigidBody.drag = 4;
-        }
-
-        //if (Math.Abs(turnInput) > 0.1f)
-        //{
-        //    Debug.Log("TURNING");
-        //}
-
-        if (Physics.Raycast(Centre.position, Vector3.down, out hit, HoverHeight, BodyLayerMask))
-        {
-            CarRigidBody.AddRelativeForce(Vector3.forward * ((powerInput > 0) ? powerInput * Speed * 4 : powerInput * BackwardsSpeed * 4));
-
-            CarRigidBody.AddRelativeTorque(0f, turnInput * TurnSpeed, 0f);
-        }
-
-        Debug.Log("End of hovermoter");
-    }
-
-    private void Spawn()
-    {
-        Debug.Log("Spawn called for: " + id);
-        RaycastHit hit;
-        if (!Physics.Raycast(Centre.position, -Centre.up, out hit, 20, BodyLayerMask))
-        {
-            CarRigidBody.velocity = Vector3.zero;
-            _waypointFollow.getSpawnPoint(CarRigidBody.transform);
-        }
-        _setToSpawn = false;
     }
 }

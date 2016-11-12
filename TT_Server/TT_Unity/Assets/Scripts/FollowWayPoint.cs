@@ -78,8 +78,8 @@ public class FollowWayPoint : MonoBehaviour
 
         if (_progressStyle == ProgressStyle.PointToPoint)
         {
-            Target.position = PathFinder.Instance.Waypoints[_progressNum].position;
-            Target.rotation = PathFinder.Instance.Waypoints[_progressNum].rotation;
+            Target.position = TrackManager.Track.Points[_progressNum].Position;
+            Target.rotation = TrackManager.Track.Points[_progressNum].Rotation;
         }
     }
 
@@ -129,12 +129,12 @@ public class FollowWayPoint : MonoBehaviour
 
             if (targetDelta.magnitude < _pointToPointThreshold)
             {
-                _progressNum = (_progressNum + 1) % PathFinder.Instance.Waypoints.Count;
+                _progressNum = (_progressNum + 1) % TrackManager.Track.Points.Count;
             }
 
 
-            Target.position = PathFinder.Instance.Waypoints[_progressNum].position;
-            Target.rotation = PathFinder.Instance.Waypoints[_progressNum].rotation;
+            Target.position = TrackManager.Track.Points[_progressNum].Position;
+            Target.rotation = TrackManager.Track.Points[_progressNum].Rotation;
 
             // get our current progress along the route
 

@@ -7,7 +7,7 @@ public class Waypoint : MonoBehaviour {
 
     public float Width { get { return _width; } }
 
-    //public float Rotation { get { return transform.rotation.x; } }
+    public Quaternion Rotation { get { return transform.rotation; } }
 
     public Vector3 Up { get { return transform.up; } }
 

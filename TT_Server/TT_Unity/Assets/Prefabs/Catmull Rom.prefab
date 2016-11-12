@@ -28,7 +28,7 @@ GameObject:
   - 33: {fileID: 3399032}
   - 23: {fileID: 2385532}
   - 64: {fileID: 6421936}
-  - 114: {fileID: 11402630}
+  - 114: {fileID: 11475122}
   m_Layer: 9
   m_Name: Catmull Rom
   m_TagString: Untagged
@@ -310,7 +310,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 192740}
   m_LocalRotation: {x: 0, y: 0, z: -0.3017918, w: 0.9533739}
-  m_LocalPosition: {x: -11, y: 20, z: 68.3}
+  m_LocalPosition: {x: 38, y: 90, z: 68.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -35.1305}
   m_Children: []
@@ -464,22 +464,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _width: 20
   _centre: 0
---- !u!114 &11402630
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 105146}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7f29fc8a0bcb31438e9609f58e0935a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RayColor: {r: 1, g: 0.8, b: 0.20784314, a: 1}
-  Waypoints: []
-  SmoothCorners: 1
-  NumGizmoLines: 70
-  TotalLength: 0
 --- !u!114 &11402714
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -506,7 +490,7 @@ MonoBehaviour:
   - {fileID: 11401312}
   CurveResolution: 189
   ClosedLoop: 1
-  TotalLength: 953.5714
+  TotalLength: 1010.7907
   materials:
   - {fileID: 2100000, guid: 75d8bba0a5f46eb41bcc99bb2f5d00f3, type: 2}
   - {fileID: 2100000, guid: 1b21a114d0d8dcc409a4cc189a3d2ddd, type: 2}
@@ -590,6 +574,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _width: 15.75
   _centre: 0.286
+--- !u!114 &11475122
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 105146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f079e28a46c2c414088aa7607ef90230, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _points: []
 --- !u!114 &11482542
 MonoBehaviour:
   m_ObjectHideFlags: 1
