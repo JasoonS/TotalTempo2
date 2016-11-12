@@ -9,7 +9,7 @@ public class CurveImplementation : MonoBehaviour
 {
     public List<Waypoint> _points = new List<Waypoint>();
 
-    public int CurveResolution = 10;
+    public int CurveResolution = 500;
 
     public bool ClosedLoop = false;
 
