@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class VehicleManager : MonoBehaviour {
     private static VehicleManager _vehicleManager;
@@ -8,6 +9,11 @@ public class VehicleManager : MonoBehaviour {
     private string[] ids;
     private string playerId;
 
+<<<<<<< HEAD
+=======
+    private Dictionary<string, float> _carPosition;
+
+>>>>>>> Dev
     // Use the static object pattern to guarantee that this object is correctly assigned and pressent in the scene.
     public static VehicleManager Instance
     {
@@ -48,6 +54,11 @@ public class VehicleManager : MonoBehaviour {
                 ids[idIndex++] = hoverMotors[i].id;
             }
         }
+    }
+
+    public static void SetStatusPosition(string vehicleId, float distance)
+    {
+        Debug.Log(vehicleId + "Distance" + distance);
     }
 
     // Return the static instance's array of ids.

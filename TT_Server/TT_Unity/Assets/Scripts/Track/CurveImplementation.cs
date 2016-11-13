@@ -91,18 +91,21 @@ public class CurveImplementation : MonoBehaviour
 
         float accumulateDistance = 0;
 
-        // Debug.Log("IMPORTANT::" + TrackManager.Track.Points.Count);
-        for (int i = 0; i < TrackManager.Track.Points.Count + 1; ++i)
+        if (TrackManager.Track.Points.Count > 0)
         {
-            var t1 = TrackManager.Track.Points[(i) % TrackManager.Track.Points.Count].Position;
-            var t2 = TrackManager.Track.Points[(i + 1) % TrackManager.Track.Points.Count].Position;
-
-            if (t1 != null && t2 != null)
+            // Debug.Log("IMPORTANT::" + TrackManager.Track.Points.Count);
+            for (int i = 0; i < TrackManager.Track.Points.Count + 1; ++i)
             {
-                _distances[i] = accumulateDistance;
-                _secDistances[i] = (t1 - t2).magnitude;
+                var t1 = TrackManager.Track.Points[(i) % TrackManager.Track.Points.Count].Position;
+                var t2 = TrackManager.Track.Points[(i + 1) % TrackManager.Track.Points.Count].Position;
 
-                accumulateDistance += _secDistances[i];
+                if (t1 != null && t2 != null)
+                {
+                    _distances[i] = accumulateDistance;
+                    _secDistances[i] = (t1 - t2).magnitude;
+
+                    accumulateDistance += _secDistances[i];
+                }
             }
         }
     }

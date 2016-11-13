@@ -9,6 +9,7 @@ public class PathFinder : MonoBehaviour
     // public List<Transform> TrackManager.Track.Points = new List<Transform>();
 
     private float[] _distances;
+    public static float[] Distances { get { return Instance._distances; } }
 
     private Vector3[] _points;
 
@@ -75,8 +76,7 @@ public class PathFinder : MonoBehaviour
         TotalLength = _distances[_distances.Length - 1];
     }
 
-    // function to create lookup of distances and
-
+    // function to create lookup of distances
     private void FillAccumalativeDistances()
     {
         _distances = new float[TrackManager.Track.Points.Count + 1];
