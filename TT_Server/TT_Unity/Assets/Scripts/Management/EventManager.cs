@@ -41,6 +41,12 @@ public class EventManager : MonoBehaviour {
     public static void StartListening(string eventName, UnityAction listener)
     {
         UnityEvent thisEvent = null;
+
+        if (eventName == null)
+        {
+            Debug.LogError("You should never pass a NULL string to 'StartListening'");
+        }
+
         if (Instance._eventDictionary.TryGetValue (eventName, out thisEvent))
         {
             thisEvent.AddListener(listener);

@@ -41,8 +41,8 @@ public class HoverMotor : MonoBehaviour
 
     public bool _setToSpawn;
 
-    //TODO:: set this in a better way, auto assign an id?
-    public string id;
+    //TODO:: set this in a better way, auto assign an _id?
+    public string _id;
 
     public bool isPlayer;
 
@@ -60,6 +60,7 @@ public class HoverMotor : MonoBehaviour
         CarRigidBody = GetComponent<Rigidbody>();
 
         _waypointFollow = GetComponent<FollowWayPoint>();
+        _waypointFollow.setID(_id);
 
         _aboveThrusterDistance = FloatHeight - HoverHeight;
 
@@ -68,12 +69,12 @@ public class HoverMotor : MonoBehaviour
 
         _setToSpawn = false;
         //TrackMask = ~TrackMask;
-        EventManager.StartListening(id, spawnListener);
+        EventManager.StartListening(_id, spawnListener);
     }
 
     void OnDisable()
     {
-        EventManager.StopListening(id, spawnListener);
+        EventManager.StopListening(_id, spawnListener);
     }
 
     internal void Move(float powerInputIn, float turnInputIn)
@@ -139,14 +140,14 @@ public class HoverMotor : MonoBehaviour
            {
                _setToSpawn = true;
                // TODO:: implement a static metronome
-               Metronome.addSpawner(id);
+               Metronome.addSpawner(_id);
            }
        }
     }
 
     private void Spawn()
     {
-        //Debug.Log("Spawn called for: " + id);
+        //Debug.Log("Spawn called for: " + _id);
         RaycastHit hit;
         if (!Physics.Raycast(Centre.position, -Centre.up, out hit, 20, TrackMask))
         {
