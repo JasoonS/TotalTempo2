@@ -7,9 +7,9 @@ using System.Collections;
 [ExecuteInEditMode()]
 public class CurveImplementation : MonoBehaviour
 {
-    public List<Waypoint> _points = new List<Waypoint>();
+    //public List<Waypoint> TrackManager.Track.Points = new List<Waypoint>();
 
-    public int CurveResolution = 10;
+    public int CurveResolution = 500;
 
     public bool ClosedLoop = false;
 
@@ -41,6 +41,8 @@ public class CurveImplementation : MonoBehaviour
                 if (!_curve)
                 {
                     Debug.LogError("You need to have at least one active Event Manager script in your scene.");
+                } else {
+                  _curve.Init();
                 }
             }
             return _curve;
@@ -49,14 +51,11 @@ public class CurveImplementation : MonoBehaviour
 
     void Start()
     {
-        Waypoint[] way_points = GetComponentsInChildren<Waypoint>();
+        Init();
+    }
 
-        _points.Clear();
-        foreach (Waypoint waypoint in way_points)
-        {
-            _points.Add(waypoint);
-        }
-
+    void Init()
+    {
         FillAccumalativeDistances();
         TotalLength = _distances[_distances.Length - 1];
 
@@ -64,7 +63,7 @@ public class CurveImplementation : MonoBehaviour
 
         UpdateTrack();
 
-        EventManager.StartListening("k_changeColour", ChangeColour);
+        //EventManager.StartListening("k_changeColour", ChangeColour);
     }
 
     void OnDisable()
@@ -87,15 +86,16 @@ public class CurveImplementation : MonoBehaviour
 
     private void FillAccumalativeDistances()
     {
-        _distances = new float[_points.Count + 1];
-        _secDistances = new float[_points.Count + 1];
+        _distances = new float[TrackManager.Track.Points.Count + 1];
+        _secDistances = new float[TrackManager.Track.Points.Count + 1];
 
         float accumulateDistance = 0;
 
-        for (int i = 0; i < _points.Count + 1; ++i)
+        // Debug.Log("IMPORTANT::" + TrackManager.Track.Points.Count);
+        for (int i = 0; i < TrackManager.Track.Points.Count + 1; ++i)
         {
-            var t1 = _points[(i) % _points.Count].Position;
-            var t2 = _points[(i + 1) % _points.Count].Position;
+            var t1 = TrackManager.Track.Points[(i) % TrackManager.Track.Points.Count].Position;
+            var t2 = TrackManager.Track.Points[(i + 1) % TrackManager.Track.Points.Count].Position;
 
             if (t1 != null && t2 != null)
             {
@@ -126,7 +126,7 @@ public class CurveImplementation : MonoBehaviour
         int ind = 0;
 
         // First for loop goes through each individual control point and connects it to the next, so 0-1, 1-2, 2-3 and so on
-        for (int i = 0; i < _points.Count - closedAdjustment; i++)
+        for (int i = 0; i < TrackManager.Track.Points.Count - closedAdjustment; i++)
         {
             calculatePandM(i);
 
@@ -145,9 +145,10 @@ public class CurveImplementation : MonoBehaviour
 
                 position = CatmullRom.Interpolate(p0, p1, m0, m1, t, out tangent);
 
-                Vector3 normal = Vector3.Lerp(_points[i].Up, _points[(i + 1) % _points.Capacity].Up, percentThrough);
-                float center = Mathf.Lerp(_points[i].Centre, _points[(i + 1) % _points.Capacity].Centre, percentThrough);
-                float width = Mathf.Lerp(_points[i].Width, _points[(i + 1) % _points.Capacity].Width, percentThrough);
+                // Debug.Log("THIS IS THE ERROR::" + TrackManager.Track.Points.Count + ":: i is::" + i + ":: capacity :: " + TrackManager.Track.Points.Count);
+                Vector3 normal = Vector3.Lerp(TrackManager.Track.Points[i].Up, TrackManager.Track.Points[(i + 1) % TrackManager.Track.Points.Count].Up, percentThrough);
+                float center = Mathf.Lerp(TrackManager.Track.Points[i].Centre, TrackManager.Track.Points[(i + 1) % TrackManager.Track.Points.Count].Centre, percentThrough);
+                float width = Mathf.Lerp(TrackManager.Track.Points[i].Width, TrackManager.Track.Points[(i + 1) % TrackManager.Track.Points.Count].Width, percentThrough);
 
                 vertices[ind * 2] = position + Vector3.Cross(tangent, normal).normalized * width * (1 + center);
                 vertices[ind * 2 + 1] = position - Vector3.Cross(tangent, normal).normalized * width * (1 - center);
@@ -183,8 +184,8 @@ public class CurveImplementation : MonoBehaviour
 
     private void calculatePandM(int i)
     {
-        p0 = _points[i].Position;
-        p1 = (ClosedLoop == true && i == _points.Count - 1) ? _points[0].Position : _points[i + 1].Position;
+        p0 = TrackManager.Track.Points[i].Position;
+        p1 = (ClosedLoop == true && i == TrackManager.Track.Points.Count - 1) ? TrackManager.Track.Points[0].Position : TrackManager.Track.Points[i + 1].Position;
 
         // Tangent calculation for each control point
         // Tangent M[k] = (P[k+1] - P[k-1]) / 2
@@ -192,33 +193,33 @@ public class CurveImplementation : MonoBehaviour
         // m0
         if (i == 0)
         {
-            m0 = ClosedLoop ? 0.5f * (p1 - _points[_points.Count - 1].Position) : p1 - p0;
+            m0 = ClosedLoop ? 0.5f * (p1 - TrackManager.Track.Points[TrackManager.Track.Points.Count - 1].Position) : p1 - p0;
         }
         else
         {
-            m0 = 0.5f * (p1 - _points[i - 1].Position);
+            m0 = 0.5f * (p1 - TrackManager.Track.Points[i - 1].Position);
         }
         // m1
         if (ClosedLoop)
         {
-            if (i == _points.Count - 1)
+            if (i == TrackManager.Track.Points.Count - 1)
             {
-                m1 = 0.5f * (_points[(i + 2) % _points.Count].Position - p0);
+                m1 = 0.5f * (TrackManager.Track.Points[(i + 2) % TrackManager.Track.Points.Count].Position - p0);
             }
             else if (i == 0)
             {
-                m1 = 0.5f * (_points[i + 2].Position - p0);
+                m1 = 0.5f * (TrackManager.Track.Points[i + 2].Position - p0);
             }
             else
             {
-                m1 = 0.5f * (_points[(i + 2) % _points.Count].Position - p0);
+                m1 = 0.5f * (TrackManager.Track.Points[(i + 2) % TrackManager.Track.Points.Count].Position - p0);
             }
         }
         else
         {
-            if (i < _points.Count - 2)
+            if (i < TrackManager.Track.Points.Count - 2)
             {
-                m1 = 0.5f * (_points[(i + 2) % _points.Count].Position - p0);
+                m1 = 0.5f * (TrackManager.Track.Points[(i + 2) % TrackManager.Track.Points.Count].Position - p0);
             }
             else
             {
@@ -251,9 +252,9 @@ public class CurveImplementation : MonoBehaviour
 
         Vector3 position = CatmullRom.Interpolate(Instance.p0, Instance.p1, Instance.m0, Instance.m1, t, out tangent);
 
-        Vector3 normal = Vector3.Lerp(Instance._points[point].Up, Instance._points[(point + 1) % Instance._points.Capacity].Up, percentThrough);
-        float center = Mathf.Lerp(Instance._points[point].Centre, Instance._points[(point + 1) % Instance._points.Capacity].Centre, percentThrough);
-        float width = Mathf.Lerp(Instance._points[point].Width, Instance._points[(point + 1) % Instance._points.Capacity].Width, percentThrough);
+        Vector3 normal = Vector3.Lerp(TrackManager.Track.Points[point].Up, TrackManager.Track.Points[(point + 1) % TrackManager.Track.Points.Count].Up, percentThrough);
+        float center = Mathf.Lerp(TrackManager.Track.Points[point].Centre, TrackManager.Track.Points[(point + 1) % TrackManager.Track.Points.Count].Centre, percentThrough);
+        float width = Mathf.Lerp(TrackManager.Track.Points[point].Width, TrackManager.Track.Points[(point + 1) % TrackManager.Track.Points.Count].Width, percentThrough);
 
         car.position = position + Vector3.Cross(tangent, normal).normalized * width * center + height * Vector3.up;
         car.up = normal;
@@ -270,7 +271,7 @@ public class CurveImplementation : MonoBehaviour
         int ind = 0;
 
         //// First for loop goes through each individual control point and connects it to the next, so 0-1, 1-2, 2-3 and so on
-        for (int i = 0; i < Instance._points.Count - closedAdjustment; i++)
+        for (int i = 0; i < TrackManager.Track.Points.Count - closedAdjustment; i++)
         {
             Instance.calculatePandM(i);
 
@@ -288,14 +289,14 @@ public class CurveImplementation : MonoBehaviour
 
                 position = CatmullRom.Interpolate(Instance.p0, Instance.p1, Instance.m0, Instance.m1, t, out tangent);
 
-                Vector3 normal = Vector3.Lerp(Instance._points[i].Up, Instance._points[(i + 1) % Instance._points.Capacity].Up, percentThrough);
-                float center = Mathf.Lerp(Instance._points[i].Centre, Instance._points[(i + 1) % Instance._points.Capacity].Centre, percentThrough);
-                float width = Mathf.Lerp(Instance._points[i].Width, Instance._points[(i + 1) % Instance._points.Capacity].Width, percentThrough);
+                Vector3 normal = Vector3.Lerp(TrackManager.Track.Points[i].Up, TrackManager.Track.Points[(i + 1) % TrackManager.Track.Points.Count].Up, percentThrough);
+                float center = Mathf.Lerp(TrackManager.Track.Points[i].Centre, TrackManager.Track.Points[(i + 1) % TrackManager.Track.Points.Count].Centre, percentThrough);
+                float width = Mathf.Lerp(TrackManager.Track.Points[i].Width, TrackManager.Track.Points[(i + 1) % TrackManager.Track.Points.Count].Width, percentThrough);
 
                 float centerOffset = Random.Range(-1.0f, 1.0f);
 
                 TokenSpawner.SpawnTokensAtPoint(2 * normal + position + Vector3.Cross(tangent, normal).normalized * width * (center + centerOffset));
-                
+
                 ++ind;
                 currentDistance += step;
             }
@@ -312,7 +313,7 @@ public class CurveImplementation : MonoBehaviour
         int ind = 0;
 
         //// First for loop goes through each individual control point and connects it to the next, so 0-1, 1-2, 2-3 and so on
-        for (int i = 0; i < _points.Count - closedAdjustment; i++)
+        for (int i = 0; i < TrackManager.Track.Points.Count - closedAdjustment; i++)
         {
             calculatePandM(i);
 
@@ -334,9 +335,9 @@ public class CurveImplementation : MonoBehaviour
                 Gizmos.color = Color.red;
                 Gizmos.DrawSphere(position, 0.25f);
 
-                Vector3 normal = Vector3.Lerp(_points[i].Up, _points[(i + 1) % _points.Capacity].Up, percentThrough);
-                float center = Mathf.Lerp(_points[i].Centre, _points[(i + 1) % _points.Capacity].Centre, percentThrough);
-                float width = Mathf.Lerp(_points[i].Width, _points[(i + 1) % _points.Capacity].Width, percentThrough);
+                Vector3 normal = Vector3.Lerp(TrackManager.Track.Points[i].Up, TrackManager.Track.Points[(i + 1) % TrackManager.Track.Points.Count].Up, percentThrough);
+                float center = Mathf.Lerp(TrackManager.Track.Points[i].Centre, TrackManager.Track.Points[(i + 1) % TrackManager.Track.Points.Count].Centre, percentThrough);
+                float width = Mathf.Lerp(TrackManager.Track.Points[i].Width, TrackManager.Track.Points[(i + 1) % TrackManager.Track.Points.Count].Width, percentThrough);
 
                 Gizmos.color = Color.green;
                 Gizmos.DrawSphere(position + Vector3.Cross(tangent, normal).normalized * width * (1 + center), 0.5f);

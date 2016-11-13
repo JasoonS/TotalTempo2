@@ -1,14 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(HoverMotor))]
+[RequireComponent(typeof(HoverMotorCopy))]
 public class TestPlayerInput : MonoBehaviour
 {
-    private HoverMotor HoverCar; // the car controller we want to use
+    private HoverMotorCopy HoverCar; // the car controller we want to use
 
     private void Awake()
     {
-        HoverCar = GetComponent<HoverMotor>();
+        HoverCar = GetComponent<HoverMotorCopy>();
     }
 
 
@@ -18,10 +18,5 @@ public class TestPlayerInput : MonoBehaviour
         float turnInput = Input.GetAxis("Horizontal");
 
         HoverCar.Move(powerInput, turnInput);
-
-        if (Input.GetButtonDown("Jump"))
-        {
-            HoverCar.Jump();
-        }
     }
 }

@@ -6,13 +6,13 @@ public class PathFinder : MonoBehaviour
 {
     public Color RayColor = Color.white;
 
-    public List<Transform> Waypoints = new List<Transform>();
+    // public List<Transform> TrackManager.Track.Points = new List<Transform>();
 
     private float[] _distances;
 
     private Vector3[] _points;
 
-    private Transform[] _childWaypoints;
+    // private Transform[] TrackManager.Track.Points;
 
     public bool SmoothCorners = true;
     public int NumGizmoLines;
@@ -49,7 +49,7 @@ public class PathFinder : MonoBehaviour
 
                 if (!_curve)
                 {
-                    Debug.LogError("You need to have at least one active Event Manager script in your scene.");
+                    Debug.LogError("You need to have at least one active Path Finder script in your scene.");
                 }
             }
             return _curve;
@@ -57,19 +57,19 @@ public class PathFinder : MonoBehaviour
     }
     void Start()
     {
-        _childWaypoints = GetComponentsInChildren<Transform>();
+        // TrackManager.Track.Points = GetComponentsInChildren<Transform>();
+        //
+        // TrackManager.Track.Points.Clear();
+        //
+        // foreach (Transform waypoint in TrackManager.Track.Points)
+        // {
+        //     if (waypoint != transform)
+        //     {
+        //         TrackManager.Track.Points.Add(waypoint);
+        //     }
+        // }
 
-        Waypoints.Clear();
-
-        foreach (Transform waypoint in _childWaypoints)
-        {
-            if (waypoint != transform)
-            {
-                Waypoints.Add(waypoint);
-            }
-        }
-
-        _numPoints = Waypoints.Count;
+        _numPoints = TrackManager.Track.Points.Count;
 
         FillAccumalativeDistances();
         TotalLength = _distances[_distances.Length - 1];
@@ -79,20 +79,22 @@ public class PathFinder : MonoBehaviour
 
     private void FillAccumalativeDistances()
     {
-        _distances = new float[Waypoints.Count + 1];
+        _distances = new float[TrackManager.Track.Points.Count + 1];
 
         float accumulateDistance = 0;
 
-        for (int i = 0; i < Waypoints.Count + 1; ++i)
+        //Debug.Log("Path Finder::" + TrackManager.Track.Points.Count);
+        for (int i = 0; i < TrackManager.Track.Points.Count + 1; ++i)
         {
-            var t1 = Waypoints[(i) % Waypoints.Count];
-            var t2 = Waypoints[(i + 1) % Waypoints.Count];
+            //Debug.Log("Path Finder::" + TrackManager.Track.Points.Count);
+            var t1 = TrackManager.Track.Points[(i) % TrackManager.Track.Points.Count];
+            var t2 = TrackManager.Track.Points[(i + 1) % TrackManager.Track.Points.Count];
 
             if (t1 != null && t2 != null)
             {
                 _distances[i] = accumulateDistance;
 
-                accumulateDistance += (t1.position - t2.position).magnitude;
+                accumulateDistance += (t1.Position - t2.Position).magnitude;
             }
         }
     }
@@ -137,10 +139,10 @@ public class PathFinder : MonoBehaviour
             _p2n = _p2n % _numPoints;
             _p3n = (point + 1) % _numPoints;
 
-            _P0 = Waypoints[_p0n].position;
-            _P1 = Waypoints[_p1n].position;
-            _P2 = Waypoints[_p2n].position;
-            _P3 = Waypoints[_p3n].position;
+            _P0 = TrackManager.Track.Points[_p0n].Position;
+            _P1 = TrackManager.Track.Points[_p1n].Position;
+            _P2 = TrackManager.Track.Points[_p2n].Position;
+            _P3 = TrackManager.Track.Points[_p3n].Position;
 
             return CatmullRom(_P0, _P1, _P2, _P3, _i);
         }
@@ -152,7 +154,7 @@ public class PathFinder : MonoBehaviour
             _p1n = ((point - 1) + _numPoints) % _numPoints;
             _p2n = point;
 
-            return Vector3.Lerp(Waypoints[_p1n].position, Waypoints[_p2n].position, _i);
+            return Vector3.Lerp(TrackManager.Track.Points[_p1n].Position, TrackManager.Track.Points[_p2n].Position, _i);
         }
     }
 
@@ -169,9 +171,9 @@ public class PathFinder : MonoBehaviour
     {
         // to avoid stupid errors (need more than one to make a looooop ;) )
 
-        if (Waypoints.Count > 1)
+        if (TrackManager.Track.Points.Count > 1)
         {
-            Vector3 previous = Waypoints[0].position;
+            Vector3 previous = TrackManager.Track.Points[0].Position;
 
             if (SmoothCorners)
             {
@@ -187,16 +189,16 @@ public class PathFinder : MonoBehaviour
                     previous = next;
                 }
 
-                Gizmos.DrawLine(previous, Waypoints[0].position);
+                Gizmos.DrawLine(previous, TrackManager.Track.Points[0].Position);
             }
 
             else
             {
-                for (int i = 0; i < Waypoints.Count; i++)
+                for (int i = 0; i < TrackManager.Track.Points.Count; i++)
                 {
-                    previous = Waypoints[i].position;
+                    previous = TrackManager.Track.Points[i].Position;
 
-                    Vector3 position = Waypoints[(i + 1) % _numPoints].position;
+                    Vector3 position = TrackManager.Track.Points[(i + 1) % _numPoints].Position;
 
                     Gizmos.DrawLine(previous, position);
                     Gizmos.DrawWireSphere(position, 2f);
