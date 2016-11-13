@@ -188,7 +188,6 @@ GameObject:
   - 114: {fileID: 11476270}
   - 114: {fileID: 11433540}
   - 114: {fileID: 11405798}
-  - 114: {fileID: 11439992}
   m_Layer: 0
   m_Name: PlayerOffline
   m_TagString: Player
@@ -717,8 +716,8 @@ MonoBehaviour:
   _lookAheadForTargetFactor: 0.1
   _lookAheadForSpeedOffset: 10
   _lookAheadForSpeedFactor: 0.2
-  _progressStyle: 0
   _pointToPointThreshold: 4
+  _progressStyle: 0
   Target: {fileID: 409224}
 --- !u!114 &11433540
 MonoBehaviour:
@@ -729,17 +728,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 52e4d30667f0dca4aad9fbc9f39ec3e0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &11439992
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 169954}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9dfc4d973197bf44cabe8cce54e9089f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &11476270
@@ -755,12 +743,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HoverForce: 100
   HoverHeight: 4
-  AirTimeGravity: 40
+  FloatHeight: 8
   Speed: 200
   BackwardsSpeed: 100
   TurnSpeed: 80
+  MaxDrag: 4
+  TrackSuction: 4
   JumpThrust: 5000
-  suctionForce: 50
   Thrusters:
   - {fileID: 434620}
   - {fileID: 421114}
@@ -768,9 +757,8 @@ MonoBehaviour:
   - {fileID: 409122}
   MaxSpeed: 36.80006
   Centre: {fileID: 494126}
-  Body: {fileID: 412100}
   _setToSpawn: 0
-  id: Player
+  _id: 
   isPlayer: 1
 --- !u!1001 &100100000
 Prefab:
