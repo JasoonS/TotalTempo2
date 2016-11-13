@@ -63,7 +63,7 @@ public class CurveImplementation : MonoBehaviour
 
         UpdateTrack();
 
-        EventManager.StartListening("k_changeColour", ChangeColour);
+        //EventManager.StartListening("k_changeColour", ChangeColour);
     }
 
     void OnDisable()

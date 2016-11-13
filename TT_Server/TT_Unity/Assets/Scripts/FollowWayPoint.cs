@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class FollowWayPoint : MonoBehaviour
 {
@@ -26,12 +25,21 @@ public class FollowWayPoint : MonoBehaviour
     // A multiplier adding distance ahead along the route for speed adjustments
 
     [SerializeField]
+    private ProgressStyle _progressStyle = ProgressStyle.SmoothAlongRoute;
+    // whether to update the position smoothly along the route (good for curved paths) or just when we reach each waypoint.
+
+    [SerializeField]
     private float _pointToPointThreshold = 4;
     // proximity to waypoint which must be reached to switch target to next waypoint : only used in PointToPoint mode.
 
-    private string _vehicleID;
+    public enum ProgressStyle
+    {
+        SmoothAlongRoute,
+        PointToPoint,
+    }
 
     // these are public, readable by other objects - i.e. for an AI to know where to head!
+
     public PathFinder.RoutePoint TargetPoint { get; private set; }
     public PathFinder.RoutePoint SpeedPoint { get; private set; }
     public PathFinder.RoutePoint ProgressPoint { get; private set; }
@@ -40,12 +48,6 @@ public class FollowWayPoint : MonoBehaviour
 
     private float _progressDistance; // The progress round the route, used in smooth mode.
     private int _progressNum; // the current waypoint number, used in point-to-point mode.
-
-    internal void setID(string id)
-    {
-        _vehicleID = id;
-    }
-
     private Vector3 _lastPosition; // Used to calculate current speed (since we may not have a rigidbody component)
     private float _speed; // current speed of this object (calculated from delta since last frame)
 
@@ -74,37 +76,79 @@ public class FollowWayPoint : MonoBehaviour
         _progressDistance = 0;
         _progressNum = 0;
 
-        Target.position = TrackManager.Track.Points[_progressNum].Position;
-        Target.rotation = TrackManager.Track.Points[_progressNum].Rotation;
+        if (_progressStyle == ProgressStyle.PointToPoint)
+        {
+            Target.position = TrackManager.Track.Points[_progressNum].Position;
+            Target.rotation = TrackManager.Track.Points[_progressNum].Rotation;
+        }
     }
 
 
     private void Update()
     {
-        Vector3 targetDelta = Target.position - transform.position;
-
-        if (targetDelta.magnitude < _pointToPointThreshold)
+        if (_progressStyle == ProgressStyle.SmoothAlongRoute)
         {
-            _progressNum = (_progressNum + 1) % TrackManager.Track.Points.Count;
-            Debug.Log(_vehicleID + " is at position: " + _progressNum);
+            // determine the position we should currently be aiming for
+            // (this is different to the current progress position, it is a a certain amount ahead along the route)
+            // we use lerp as a simple way of smoothing out the speed over time.
+
+            if (Time.deltaTime > 0)
+            {
+                _speed = Mathf.Lerp(_speed, (_lastPosition - transform.position).magnitude / Time.deltaTime,
+                                   Time.deltaTime);
+            }
+
+            Target.position =
+                PathFinder.Instance.GetRoutePoint(_progressDistance + _lookAheadForTargetOffset + _lookAheadForTargetFactor * _speed)
+                       .position;
+
+            Target.rotation =
+                Quaternion.LookRotation(
+                    PathFinder.Instance.GetRoutePoint(_progressDistance + _lookAheadForSpeedOffset + _lookAheadForSpeedFactor * _speed)
+                           .direction);
+
+            // get our current progress along the route
+
+            ProgressPoint = PathFinder.Instance.GetRoutePoint(_progressDistance);
+
+            Vector3 progressDelta = ProgressPoint.position - transform.position;
+
+            if (Vector3.Dot(progressDelta, ProgressPoint.direction) < 0)
+            {
+                _progressDistance += progressDelta.magnitude * 0.5f;
+            }
+
+            _lastPosition = transform.position;
         }
 
-
-        Target.position = TrackManager.Track.Points[_progressNum].Position;
-        Target.rotation = TrackManager.Track.Points[_progressNum].Rotation;
-
-        // get our current progress along the route
-
-        ProgressPoint = PathFinder.Instance.GetRoutePoint(_progressDistance);
-
-        Vector3 progressDelta = ProgressPoint.position - transform.position;
-
-        if (Vector3.Dot(progressDelta, ProgressPoint.direction) < 0)
+        else
         {
-            _progressDistance += progressDelta.magnitude;
-        }
+            // point to point mode. Just increase the waypoint if we're close enough:
 
-        _lastPosition = transform.position;
+            Vector3 targetDelta = Target.position - transform.position;
+
+            if (targetDelta.magnitude < _pointToPointThreshold)
+            {
+                _progressNum = (_progressNum + 1) % TrackManager.Track.Points.Count;
+            }
+
+
+            Target.position = TrackManager.Track.Points[_progressNum].Position;
+            Target.rotation = TrackManager.Track.Points[_progressNum].Rotation;
+
+            // get our current progress along the route
+
+            ProgressPoint = PathFinder.Instance.GetRoutePoint(_progressDistance);
+
+            Vector3 progressDelta = ProgressPoint.position - transform.position;
+
+            if (Vector3.Dot(progressDelta, ProgressPoint.direction) < 0)
+            {
+                _progressDistance += progressDelta.magnitude;
+            }
+
+            _lastPosition = transform.position;
+        }
     }
 
     public void getSpawnPoint(Transform carBody)

@@ -8,8 +8,6 @@ public class VehicleManager : MonoBehaviour {
     private string[] ids;
     private string playerId;
 
-    //private Dictionary<string, > _eventDictionary;
-
     // Use the static object pattern to guarantee that this object is correctly assigned and pressent in the scene.
     public static VehicleManager Instance
     {
@@ -33,7 +31,7 @@ public class VehicleManager : MonoBehaviour {
     }
 
     // Initialise the instance. In particular the ids of all the vehicles are assigned and stored to be accessible.
-    // The players _id is stored separately for convenience and player specific functionality use.
+    // The players id is stored separately for convenience and player specific functionality use.
     public void Init()
     {
         hoverMotors = FindObjectsOfType(typeof(HoverMotor)) as HoverMotor[];
@@ -44,10 +42,10 @@ public class VehicleManager : MonoBehaviour {
         {
             if (hoverMotors[i].isPlayer)
             {
-                playerId = hoverMotors[i]._id;
+                playerId = hoverMotors[i].id;
             } else
             {
-                ids[idIndex++] = hoverMotors[i]._id;
+                ids[idIndex++] = hoverMotors[i].id;
             }
         }
     }
@@ -58,7 +56,7 @@ public class VehicleManager : MonoBehaviour {
         return Instance.ids;
     }
 
-    // Check if the given _id is the _id of the player.
+    // Check if the given id is the id of the player.
     public static bool IsPlayerById(string id)
     {
         return (Instance.playerId == id);

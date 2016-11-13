@@ -25,7 +25,7 @@ public class TokenScript : MonoBehaviour
 
         Destroy(gameObject);
             
-        GridDisplay.HitTokenUpdate(collision.gameObject.GetComponent<HoverMotor>()._id, Metronome.CurTokenCycle, _tokenColour);
+        GridDisplay.HitTokenUpdate(collision.gameObject.GetComponent<HoverMotor>().id, Metronome.CurTokenCycle, _tokenColour);
 	}
 
     public void setid(int tokenid)

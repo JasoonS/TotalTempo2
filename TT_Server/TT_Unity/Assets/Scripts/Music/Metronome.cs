@@ -136,11 +136,8 @@ public class Metronome : MonoBehaviour
                 foreach (string item in Listeners[CurrentCountInSection % 16])
                 {
                     EventManager.TriggerEvent(item);
-                    //Debug.Log(item);
-                    // TODO:: this is a temorary fix/hack. Should NEVER be null, length 0 :/
-                    if (item.Length != 0)
-                        if (item[0] == 'k')
-                            keep.Add(item);
+                    if (item[0] == 'k')
+                        keep.Add(item);
                 }
                 Listeners[CurrentCountInSection % 16] = keep;
             }
