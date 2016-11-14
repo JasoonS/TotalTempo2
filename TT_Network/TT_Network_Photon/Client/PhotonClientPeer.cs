@@ -189,20 +189,31 @@ namespace TT_Network_Photon.Client
 
             else if (operationRequest.OperationCode == 4)
             {
-                byte sequenceNo = (byte)operationRequest.Parameters[1];
+                int playerInputCount = operationRequest.Parameters.Count / 4;
 
-                PlayerSnapshotInput playerInput = new PlayerSnapshotInput();
+                byte[] sequenceNos = new byte[playerInputCount];
 
-                playerInput.isValid = true;
+                for (int i = 0; i < playerInputCount; ++i)
+                {
+                    int currentParameterBlock = i * 4;
 
-                playerInput.powerInput = (float)operationRequest.Parameters[2];
-                playerInput.turnInput = (float)operationRequest.Parameters[3];
+                    byte sequenceNo = (byte)operationRequest.Parameters[(byte)(currentParameterBlock + 1)];
 
-                playerInput.isJumping = (bool)operationRequest.Parameters[4];
+                    PlayerSnapshotInput playerInput = new PlayerSnapshotInput();
+
+                    playerInput.isValid = true;
+
+                    playerInput.powerInput = (float)operationRequest.Parameters[(byte)(currentParameterBlock + 2)];
+                    playerInput.turnInput = (float)operationRequest.Parameters[(byte)(currentParameterBlock + 3)];
+
+                    playerInput.isJumping = (bool)operationRequest.Parameters[(byte)(currentParameterBlock + 4)];
+
+                    PlayerInputs[sequenceNo] = playerInput;
+
+                    sequenceNos[i] = sequenceNo;
+                }
 
                 //Log.DebugFormat("{0}|{1},{2},{3}", sequenceNo, playerInput.powerInput, playerInput.turnInput, playerInput.isJumping);
-
-                PlayerInputs[sequenceNo] = playerInput;
 
                 OperationResponse operationResponse = new OperationResponse();
 
@@ -211,8 +222,12 @@ namespace TT_Network_Photon.Client
                 operationResponse.Parameters = new Dictionary<byte, object>()
                 {
                     { 0, 1 },
-                    { 1, sequenceNo }
                 };
+
+                for (int i = 0; i < sequenceNos.Length; ++i)
+                {
+                    operationResponse.Parameters.Add((byte)(i + 1), sequenceNos[i]);
+                }
 
                 SendOperationResponse(operationResponse, sendParameters);
             }

@@ -123,7 +123,7 @@ public class HoverCarUserControl : MonoBehaviour
 
     private void SendInputs()
     {
-        Debug.Log("***********************************************************************************************************************");
+        Dictionary<byte, PlayerInput> clientInputs = new Dictionary<byte, PlayerInput>();
 
         PlayerInput[] playerInputs = ((PlayerInputHandler)_controller.OperationHandlers[1]).PlayerInputs[_networkInterface.PeerId];
 
@@ -133,11 +133,11 @@ public class HoverCarUserControl : MonoBehaviour
 
             if (!playerInput.isACKed)
             {
-                //Debug.LogFormat("{0}|{1},{2},{3}", i, _powerInput, _turnInput, _isJumping);
-
-                _networkInterface.SendClientInputs((byte)(i), playerInput.powerInput, playerInput.turnInput, playerInput.isJumping);
+                clientInputs.Add((byte)(i), playerInput);
             }
         }
+
+        _networkInterface.SendClientInputs(clientInputs);
     }
 
     // Method to update inputs (SERVER_SIDE).

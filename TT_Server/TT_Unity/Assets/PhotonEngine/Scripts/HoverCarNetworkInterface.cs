@@ -54,18 +54,30 @@ public class HoverCarNetworkInterface : MonoBehaviour
 
     // Client-side request to update server-side inputs (OPERATION_CODE_4).
 
-    public void SendClientInputs(byte sequenceNo, float powerInput, float turnInput, bool isJumping)
+    public void SendClientInputs(Dictionary<byte, PlayerInput> clientInputs)
     {
         OperationRequest operationRequest = new OperationRequest();
 
         operationRequest.OperationCode = 4;
-        operationRequest.Parameters = new Dictionary<byte, object>()
+
+        operationRequest.Parameters = new Dictionary<byte, object>();
+
+        byte parameterIndex = 0;
+
+        foreach (KeyValuePair<byte, PlayerInput> playerInput in clientInputs)
         {
-            { 1, sequenceNo },
-            { 2, powerInput },
-            { 3, turnInput },
-            { 4, isJumping }
-        };
+            ++parameterIndex;
+            operationRequest.Parameters.Add(parameterIndex, playerInput.Key);
+
+            ++parameterIndex;
+            operationRequest.Parameters.Add(parameterIndex, playerInput.Value.powerInput);
+
+            ++parameterIndex;
+            operationRequest.Parameters.Add(parameterIndex, playerInput.Value.turnInput);
+
+            ++parameterIndex;
+            operationRequest.Parameters.Add(parameterIndex, playerInput.Value.isJumping);
+        }
 
         PhotonEngine.Instance.SendOp(operationRequest, false, 0, false);
     }

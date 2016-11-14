@@ -49,9 +49,10 @@ public class PlayerInputHandler : PhotonOperationHandler
 
             Guid myPeerId = ((PeerIdHandler)_controller.OperationHandlers[0]).MyPeerId;
 
-            byte sequenceNo = (byte)response.Parameters[1];
-
-            _playerInputs[myPeerId][sequenceNo].isACKed = true;
+            for (int i = 1; i < (response.Parameters.Count + 1); ++i)
+            {
+                _playerInputs[myPeerId][(byte)(response.Parameters[(byte)(i)])].isACKed = true;
+            }
         }
     }
 }
