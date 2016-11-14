@@ -56,6 +56,8 @@ public class HoverCarNetworkInterface : MonoBehaviour
 
     public void SendClientInputs(byte sequenceNo, float powerInput, float turnInput, bool isJumping)
     {
+        Debug.LogFormat("{0}|{1},{2},{3}", sequenceNo, powerInput, turnInput, isJumping);
+
         OperationRequest operationRequest = new OperationRequest();
 
         operationRequest.OperationCode = 4;

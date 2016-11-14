@@ -18,8 +18,8 @@ public class HoverCarUserControl : MonoBehaviour
 
     private bool _isJumping = false;
 
-    private uint _updateTickInputThreshold = 2;
-    private uint _updateTickTransformThreshold = 6;
+    private uint _updateTickInputThreshold = 0;
+    private uint _updateTickTransformThreshold = 60;
 
     private uint _updateTickInput = 0;
     private uint _updateTickTransform = 0;
@@ -33,15 +33,21 @@ public class HoverCarUserControl : MonoBehaviour
         _controller = (ViewController)GameObject.Find("Login").GetComponent<Login>().Controller;
     }
 
+    public void Update()
+    {
+        if (!PhotonEngine.Instance.IsServer)
+        {
+            if (_networkInterface.IsLocalPeer)
+            {
+                GetPlayerInputs();
+            }
+        }
+    }
+
     public void FixedUpdate()
     {
         ++_updateTickInput;
         ++_updateTickTransform;
-
-        _powerInput = 0.0f;
-        _turnInput = 0.0f;
-
-        _isJumping = false;
 
         if (PhotonEngine.Instance.IsServer)
         {
@@ -81,10 +87,10 @@ public class HoverCarUserControl : MonoBehaviour
             {
                 _updateTickInput = 0;
 
-                if (_networkInterface.IsLocalPeer)
-                {
-                    GetPlayerInputs();
-                }
+                //if (_networkInterface.IsLocalPeer)
+                //{
+                //    GetPlayerInputs();
+                //}
 
                 PlayerInput playerInput = new PlayerInput();
 
