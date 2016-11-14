@@ -47,7 +47,7 @@ public class PhotonEngine : MonoBehaviour, IPhotonPeerListener
     {
         ++_updateTick;
 
-        if (_updateTick > _updateTickThreshold)
+        if ((_updateTick > _updateTickThreshold) || !((((PeerIdHandler)_controller.OperationHandlers[0]).HasSentServerStatus) && ((PeerIdHandler)_controller.OperationHandlers[0]).HasRequestedMyPeerId))
         {
             _updateTick = 0;
 

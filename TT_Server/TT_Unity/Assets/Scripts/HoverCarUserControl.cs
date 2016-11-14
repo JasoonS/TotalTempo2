@@ -18,11 +18,9 @@ public class HoverCarUserControl : MonoBehaviour
 
     private bool _isJumping = false;
 
-    private uint _updateTickInputThreshold = 0;
-    private uint _updateTickTransformThreshold = 60;
+    private uint _updateTickThreshold = 60;
 
-    private uint _updateTickInput = 0;
-    private uint _updateTickTransform = 60;
+    private uint _updateTick = 60;
 
     public void Start()
     {
@@ -46,25 +44,19 @@ public class HoverCarUserControl : MonoBehaviour
 
     public void FixedUpdate()
     {
-        ++_updateTickInput;
-        ++_updateTickTransform;
+        ++_updateTick;
 
         if (PhotonEngine.Instance.IsServer)
         {
             // SERVER_SIDE.
 
-            if (_updateTickInput > _updateTickInputThreshold)
+            _networkInterface.RequestClientInputs();
+
+            UpdateInputs();
+
+            if (_updateTick > _updateTickThreshold)
             {
-                _updateTickInput = 0;
-
-                _networkInterface.RequestClientInputs();
-
-                UpdateInputs();
-            }
-
-            if (_updateTickTransform > _updateTickTransformThreshold)
-            {
-                _updateTickTransform = 0;
+                _updateTick = 0;
 
                 _networkInterface.SendServerTransform();
             }
@@ -74,37 +66,30 @@ public class HoverCarUserControl : MonoBehaviour
         {
             // CLIENT_SIDE.
 
-            if (_updateTickTransform > _updateTickTransformThreshold)
+            if (_updateTick > _updateTickThreshold)
             {
-                _updateTickTransform = 0;
-
                 _networkInterface.RequestServerTransform();
 
                 UpdateTransform();
             }
 
-            if (_updateTickInput > _updateTickInputThreshold)
-            {
-                _updateTickInput = 0;
+            //if (_networkInterface.IsLocalPeer)
+            //{
+            //    GetPlayerInputs();
+            //}
 
-                //if (_networkInterface.IsLocalPeer)
-                //{
-                //    GetPlayerInputs();
-                //}
+            PlayerInput playerInput = new PlayerInput();
 
-                PlayerInput playerInput = new PlayerInput();
+            playerInput.powerInput = _powerInput;
+            playerInput.turnInput = _turnInput;
 
-                playerInput.powerInput = _powerInput;
-                playerInput.turnInput = _turnInput;
+            playerInput.isJumping = _isJumping;
 
-                playerInput.isJumping = _isJumping;
+            ((PlayerInputHandler)_controller.OperationHandlers[1]).PlayerInputs[_networkInterface.PeerId].Add(_currentInputSequenceNo, playerInput);
 
-                ((PlayerInputHandler)_controller.OperationHandlers[1]).PlayerInputs[_networkInterface.PeerId].Add(_currentInputSequenceNo, playerInput);
+            IncrementInputSequenceNo();
 
-                IncrementInputSequenceNo();
-
-                SendInputs();
-            }
+            SendInputs();
         }
 
         _hoverMotor.Move(_powerInput, _turnInput);
