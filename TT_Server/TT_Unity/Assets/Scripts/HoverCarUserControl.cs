@@ -133,7 +133,7 @@ public class HoverCarUserControl : MonoBehaviour
 
             if (!playerInput.isACKed)
             {
-                Debug.LogFormat("{0}|{1},{2},{3}", i, _powerInput, _turnInput, _isJumping);
+                //Debug.LogFormat("{0}|{1},{2},{3}", i, _powerInput, _turnInput, _isJumping);
 
                 _networkInterface.SendClientInputs((byte)(i), playerInput.powerInput, playerInput.turnInput, playerInput.isJumping);
             }
