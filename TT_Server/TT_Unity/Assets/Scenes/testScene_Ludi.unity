@@ -343,6 +343,10 @@ Prefab:
       propertyPath: m_AutoTargetPlayer
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 104944, guid: 3ec274e1d17fcce45a17974418491d4e, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 11474330, guid: 3ec274e1d17fcce45a17974418491d4e, type: 2}
     - {fileID: 11416920, guid: 3ec274e1d17fcce45a17974418491d4e, type: 2}
@@ -895,11 +899,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11478442, guid: 3460fc3edbb7a3644963672735d3de4e, type: 2}
       propertyPath: IsOnline
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11409652, guid: 3460fc3edbb7a3644963672735d3de4e, type: 2}
       propertyPath: isServer
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3460fc3edbb7a3644963672735d3de4e, type: 2}

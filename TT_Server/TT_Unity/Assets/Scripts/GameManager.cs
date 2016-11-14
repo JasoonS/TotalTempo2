@@ -56,6 +56,8 @@ public class GameManager : MonoBehaviour
 
             _camera.Target = player.transform;
 
+            _camera.gameObject.SetActive(true);
+
             // Spawn AI vehicles at subsequent available spawn positions.
 
             for (int i = 0; i < AiCount; ++i)

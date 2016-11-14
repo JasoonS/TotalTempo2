@@ -2,8 +2,6 @@
 
 using UnityEngine;
 
-using UnityStandardAssets.Cameras;
-
 [RequireComponent(typeof(HoverMotor))]
 public class HoverCarUserControl : MonoBehaviour
 {
@@ -12,10 +10,6 @@ public class HoverCarUserControl : MonoBehaviour
     private HoverCarNetworkInterface _networkInterface;
 
     private ViewController _controller;
-
-    private AutoCam _camera;
-
-    private bool _hasCamera = false;
 
     private byte _currentInputSequenceNo = 0;
 
@@ -37,8 +31,6 @@ public class HoverCarUserControl : MonoBehaviour
         _networkInterface = GetComponent<HoverCarNetworkInterface>();
 
         _controller = (ViewController)GameObject.Find("Login").GetComponent<Login>().Controller;
-
-        _camera = GameObject.Find("Cameras").transform.GetChild(0).GetComponent<AutoCam>();
     }
 
     public void Update()
@@ -47,13 +39,6 @@ public class HoverCarUserControl : MonoBehaviour
         {
             if (_networkInterface.IsLocalPeer)
             {
-                if (!_hasCamera)
-                {
-                    _camera.Target = transform;
-
-                    _hasCamera = true;
-                }
-
                 GetPlayerInputs();
 
                 AddPlayerInputs();
