@@ -897,6 +897,10 @@ Prefab:
       propertyPath: IsOnline
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 11409652, guid: 3460fc3edbb7a3644963672735d3de4e, type: 2}
+      propertyPath: isServer
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3460fc3edbb7a3644963672735d3de4e, type: 2}
   m_IsPrefabParent: 0

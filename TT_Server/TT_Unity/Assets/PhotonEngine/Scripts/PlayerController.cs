@@ -3,8 +3,6 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-using UnityStandardAssets.Cameras;
-
 using ExitGames.Client.Photon;
 
 public class PlayerController : MonoBehaviour
@@ -18,7 +16,7 @@ public class PlayerController : MonoBehaviour
     private List<Transform> _spawnsAvailable;
     private Dictionary<Guid, Transform> _spawnsTaken;
 
-    private AutoCam _camera;
+    //private AutoCam _camera;
 
     private uint _updateTickThreshold = 60;
 
@@ -42,7 +40,7 @@ public class PlayerController : MonoBehaviour
             _spawnsAvailable.Add(playerSpawns.GetChild(i));
         }
 
-        _camera = GameObject.Find("Cameras").transform.GetChild(0).GetComponent<AutoCam>();
+        //_camera = GameObject.Find("Cameras").transform.GetChild(0).GetComponent<AutoCam>();
     }
 
     public void FixedUpdate()
@@ -139,7 +137,7 @@ public class PlayerController : MonoBehaviour
         {
             player.GetComponent<HoverCarNetworkInterface>().IsLocalPeer = true;
 
-            _camera.Target = player.transform;
+            //_camera.Target = player.transform;
 
             PlayerInput[] playerInputs = new PlayerInput[256];
 
