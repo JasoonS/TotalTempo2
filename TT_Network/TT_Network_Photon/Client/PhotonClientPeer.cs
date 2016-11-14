@@ -58,6 +58,11 @@ namespace TT_Network_Photon.Client
             PlayerData = new PlayerData();
 
             PlayerInputs = new PlayerSnapshotInput[256];
+
+            for (int i = 0; i < 256; ++i)
+            {
+                PlayerInputs[i] = new PlayerSnapshotInput();
+            }
         }
 
         protected override void OnOperationRequest(OperationRequest operationRequest, SendParameters sendParameters)
@@ -144,14 +149,14 @@ namespace TT_Network_Photon.Client
 
                 byte currentInputSequenceNo = _server.ConnectionCollection.Clients[peerId].CurrentInputSequenceNo;
 
-                PlayerSnapshotInput playerInputs = _server.ConnectionCollection.Clients[peerId].PlayerInputs[currentInputSequenceNo];
+                PlayerSnapshotInput playerInput = _server.ConnectionCollection.Clients[peerId].PlayerInputs[currentInputSequenceNo];
 
-                if (playerInputs.isValid)
+                if (playerInput.isValid)
                 {
-                    float powerInput = playerInputs.powerInput;
-                    float turnInput = playerInputs.turnInput;
+                    float powerInput = playerInput.powerInput;
+                    float turnInput = playerInput.turnInput;
 
-                    bool isJumping = playerInputs.isJumping;
+                    bool isJumping = playerInput.isJumping;
 
                     int nextInputSequenceNoTemp = currentInputSequenceNo + 1;
 

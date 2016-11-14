@@ -141,7 +141,14 @@ public class PlayerController : MonoBehaviour
 
             _camera.Target = player.transform;
 
-            ((PlayerInputHandler)_controller.OperationHandlers[1]).PlayerInputs.Add(peerId, new PlayerInput[256]);
+            PlayerInput[] playerInputs = new PlayerInput[256];
+
+            for (int i = 0; i < 256; ++i)
+            {
+                playerInputs[i] = new PlayerInput();
+            }
+
+            ((PlayerInputHandler)_controller.OperationHandlers[1]).PlayerInputs.Add(peerId, playerInputs);
         }
 
         ((PlayerTransformHandler)_controller.OperationHandlers[2]).PlayerTransforms.Add(peerId, new PlayerTransform());
