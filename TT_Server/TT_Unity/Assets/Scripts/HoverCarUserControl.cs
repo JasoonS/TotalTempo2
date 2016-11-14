@@ -40,6 +40,10 @@ public class HoverCarUserControl : MonoBehaviour
             if (_networkInterface.IsLocalPeer)
             {
                 GetPlayerInputs();
+
+                AddPlayerInputs();
+
+                IncrementInputSequenceNo();
             }
         }
     }
@@ -83,19 +87,6 @@ public class HoverCarUserControl : MonoBehaviour
                 UpdateTransform();
             }
 
-            PlayerInput playerInput = new PlayerInput();
-
-            playerInput.isACKed = false;
-
-            playerInput.powerInput = _powerInput;
-            playerInput.turnInput = _turnInput;
-
-            playerInput.isJumping = _isJumping;
-
-            ((PlayerInputHandler)_controller.OperationHandlers[1]).PlayerInputs[_networkInterface.PeerId][_currentInputSequenceNo] = playerInput;
-
-            IncrementInputSequenceNo();
-
             if (_updateTickInput > _updateTickInputThreshold)
             {
                 _updateTickInput = 0;
@@ -132,6 +123,22 @@ public class HoverCarUserControl : MonoBehaviour
         _turnInput = Input.GetAxis("Horizontal");
 
         _isJumping = Input.GetButtonDown("Jump");
+    }
+
+    // Method to add the current player inputs to a rolling array of inputs (CLIENT_SIDE).
+
+    private void AddPlayerInputs()
+    {
+        PlayerInput playerInput = new PlayerInput();
+
+        playerInput.isACKed = false;
+
+        playerInput.powerInput = _powerInput;
+        playerInput.turnInput = _turnInput;
+
+        playerInput.isJumping = _isJumping;
+
+        ((PlayerInputHandler)_controller.OperationHandlers[1]).PlayerInputs[_networkInterface.PeerId][_currentInputSequenceNo] = playerInput;
     }
 
     // Method to send all unACKed inputs (CLIENT_SIDE).
@@ -188,12 +195,7 @@ public class HoverCarUserControl : MonoBehaviour
     {
         PlayerTransform currentTransform = ((PlayerTransformHandler)_controller.OperationHandlers[2]).PlayerTransforms[_networkInterface.PeerId];
 
-        if (currentTransform.isUpdated)
-        {
-            transform.position = new Vector3(currentTransform.xPosition, currentTransform.yPosition, currentTransform.zPosition);
-            transform.eulerAngles = new Vector3(currentTransform.xRotation, currentTransform.yRotation, currentTransform.zRotation);
-
-            currentTransform.isUpdated = false;
-        }
+        transform.position = new Vector3(currentTransform.xPosition, currentTransform.yPosition, currentTransform.zPosition);
+        transform.eulerAngles = new Vector3(currentTransform.xRotation, currentTransform.yRotation, currentTransform.zRotation);
     }
 }

@@ -147,42 +147,46 @@ namespace TT_Network_Photon.Client
             {
                 Guid peerId = new Guid((byte[])operationRequest.Parameters[1]);
 
+                OperationResponse operationResponse = new OperationResponse();
+
+                operationResponse.OperationCode = 3;
+                operationResponse.ReturnCode = 0;
+                operationResponse.Parameters = new Dictionary<byte, object>()
+                {
+                    { 0, 1 },
+                    { 1, peerId.ToByteArray() }
+                };
+
                 byte currentInputSequenceNo = _server.ConnectionCollection.Clients[peerId].CurrentInputSequenceNo;
 
                 PlayerSnapshotInput playerInput = _server.ConnectionCollection.Clients[peerId].PlayerInputs[currentInputSequenceNo];
 
-                if (playerInput.isValid)
+                int playerInputNo = 0;
+
+                while (playerInput.isValid)
                 {
                     float powerInput = playerInput.powerInput;
                     float turnInput = playerInput.turnInput;
 
                     bool isJumping = playerInput.isJumping;
 
-                    int nextInputSequenceNoTemp = currentInputSequenceNo + 1;
-
-                    if (nextInputSequenceNoTemp > 255)
-                        nextInputSequenceNoTemp = 0;
-
-                    _server.ConnectionCollection.Clients[peerId].CurrentInputSequenceNo = (byte)nextInputSequenceNoTemp;
-
                     _server.ConnectionCollection.Clients[peerId].PlayerInputs[currentInputSequenceNo].isValid = false;
 
-                    OperationResponse operationResponse = new OperationResponse();
+                    operationResponse.Parameters.Add((byte)((playerInputNo * 4) + 2), currentInputSequenceNo);
+                    operationResponse.Parameters.Add((byte)((playerInputNo * 4) + 3), powerInput);
+                    operationResponse.Parameters.Add((byte)((playerInputNo * 4) + 4), turnInput);
+                    operationResponse.Parameters.Add((byte)((playerInputNo * 4) + 5), isJumping);
 
-                    operationResponse.OperationCode = 3;
-                    operationResponse.ReturnCode = 0;
-                    operationResponse.Parameters = new Dictionary<byte, object>()
-                {
-                    { 0, 1 },
-                    { 1, peerId.ToByteArray() },
-                    { 2, currentInputSequenceNo },
-                    { 3, powerInput },
-                    { 4, turnInput },
-                    { 5, isJumping }
-                };
+                    currentInputSequenceNo = (byte)IncrementInputSequenceNo(currentInputSequenceNo);
 
-                    SendOperationResponse(operationResponse, sendParameters);
+                    _server.ConnectionCollection.Clients[peerId].CurrentInputSequenceNo = currentInputSequenceNo;
+
+                    playerInput = _server.ConnectionCollection.Clients[peerId].PlayerInputs[currentInputSequenceNo];
+
+                    ++playerInputNo;
                 }
+
+                SendOperationResponse(operationResponse, sendParameters);
             }
 
             // Client-side request to update server-side inputs (OPERATION_CODE_4).
@@ -285,6 +289,16 @@ namespace TT_Network_Photon.Client
         public Dictionary<Type, ClientData> ClientData
         {
             get { return _clientData; }
+        }
+
+        private int IncrementInputSequenceNo(byte currentInputSequenceNo)
+        {
+            int nextInputSequenceNoTemp = currentInputSequenceNo + 1;
+
+            if (nextInputSequenceNoTemp > 255)
+                nextInputSequenceNoTemp = 0;
+
+            return nextInputSequenceNoTemp;
         }
 
         //public T ClientData<T>() where T : ClientData

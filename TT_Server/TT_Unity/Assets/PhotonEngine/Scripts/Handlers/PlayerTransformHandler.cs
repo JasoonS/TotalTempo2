@@ -32,8 +32,6 @@ public class PlayerTransformHandler : PhotonOperationHandler
             playerTransform.yRotation = (float)response.Parameters[6];
             playerTransform.zRotation = (float)response.Parameters[7];
 
-            playerTransform.isUpdated = true;
-
             _playerTransforms[peerId] = playerTransform;
         }
     }

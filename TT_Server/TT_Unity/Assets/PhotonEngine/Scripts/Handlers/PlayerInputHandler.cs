@@ -28,18 +28,25 @@ public class PlayerInputHandler : PhotonOperationHandler
 
             if (_playerInputs.ContainsKey(peerId))
             {
-                byte sequenceNo = (byte)response.Parameters[2];
+                int playerInputCount = (response.Parameters.Count - 2) / 4;
 
-                PlayerInput playerInput = new PlayerInput();
+                for (int i = 0; i < playerInputCount; ++i)
+                {
+                    int currentParameterBlock = i * 4;
 
-                playerInput.isACKed = false;
+                    byte sequenceNo = (byte)response.Parameters[(byte)(currentParameterBlock + 2)];
 
-                playerInput.powerInput = (float)response.Parameters[3];
-                playerInput.turnInput = (float)response.Parameters[4];
+                    PlayerInput playerInput = new PlayerInput();
 
-                playerInput.isJumping = (bool)response.Parameters[5];
+                    playerInput.isACKed = false;
 
-                _playerInputs[peerId][sequenceNo] = playerInput;
+                    playerInput.powerInput = (float)response.Parameters[(byte)(currentParameterBlock + 3)];
+                    playerInput.turnInput = (float)response.Parameters[(byte)(currentParameterBlock + 4)];
+
+                    playerInput.isJumping = (bool)response.Parameters[(byte)(currentParameterBlock + 5)];
+
+                    _playerInputs[peerId][sequenceNo] = playerInput;
+                }
             }
         }
 

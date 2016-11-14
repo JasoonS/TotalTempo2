@@ -7,6 +7,4 @@
     public float xRotation = 0.0f;
     public float yRotation = 0.0f;
     public float zRotation = 0.0f;
-
-    public bool isUpdated = false;
 }
