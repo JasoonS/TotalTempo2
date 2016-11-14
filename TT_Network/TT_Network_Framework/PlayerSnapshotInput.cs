@@ -2,7 +2,7 @@
 {
     public class PlayerSnapshotInput
     {
-        public bool isACKed = false;
+        public bool isValid = false;
 
         public float powerInput = 0.0f;
         public float turnInput = 0.0f;

@@ -73,19 +73,16 @@ public class HoverCarUserControl : MonoBehaviour
                 UpdateTransform();
             }
 
-            //if (_networkInterface.IsLocalPeer)
-            //{
-            //    GetPlayerInputs();
-            //}
-
             PlayerInput playerInput = new PlayerInput();
+
+            playerInput.isACKed = false;
 
             playerInput.powerInput = _powerInput;
             playerInput.turnInput = _turnInput;
 
             playerInput.isJumping = _isJumping;
 
-            ((PlayerInputHandler)_controller.OperationHandlers[1]).PlayerInputs[_networkInterface.PeerId].Add(_currentInputSequenceNo, playerInput);
+            ((PlayerInputHandler)_controller.OperationHandlers[1]).PlayerInputs[_networkInterface.PeerId][_currentInputSequenceNo] = playerInput;
 
             IncrementInputSequenceNo();
 
@@ -128,13 +125,18 @@ public class HoverCarUserControl : MonoBehaviour
     {
         Debug.Log("***********************************************************************************************************************");
 
-        Dictionary<byte, PlayerInput> playerInputs = ((PlayerInputHandler)_controller.OperationHandlers[1]).PlayerInputs[_networkInterface.PeerId];
+        PlayerInput[] playerInputs = ((PlayerInputHandler)_controller.OperationHandlers[1]).PlayerInputs[_networkInterface.PeerId];
 
-        foreach (KeyValuePair<byte, PlayerInput> sequenceInputPair in playerInputs)
+        for (int i = 0; i < 256; ++i)
         {
-            Debug.LogFormat("{0}|{1},{2},{3}", sequenceInputPair.Key, _powerInput, _turnInput, _isJumping);
+            PlayerInput playerInput = playerInputs[i];
 
-            _networkInterface.SendClientInputs(sequenceInputPair.Key, _powerInput, _turnInput, _isJumping);
+            if (!playerInput.isACKed)
+            {
+                Debug.LogFormat("{0}|{1},{2},{3}", i, _powerInput, _turnInput, _isJumping);
+
+                _networkInterface.SendClientInputs((byte)(i), playerInput.powerInput, playerInput.turnInput, playerInput.isJumping);
+            }
         }
     }
 
@@ -142,16 +144,16 @@ public class HoverCarUserControl : MonoBehaviour
 
     private void UpdateInputs()
     {
-        Dictionary<byte, PlayerInput> playerInputs = ((PlayerInputHandler)_controller.OperationHandlers[1]).PlayerInputs[_networkInterface.PeerId];
+        PlayerInput playerInput = ((PlayerInputHandler)_controller.OperationHandlers[1]).PlayerInputs[_networkInterface.PeerId][_currentInputSequenceNo];
 
-        if (playerInputs.ContainsKey(_currentInputSequenceNo))
+        if (!playerInput.isACKed)
         {
-            _powerInput = playerInputs[_currentInputSequenceNo].powerInput;
-            _turnInput = playerInputs[_currentInputSequenceNo].turnInput;
+            _powerInput = playerInput.powerInput;
+            _turnInput = playerInput.turnInput;
 
-            _isJumping = playerInputs[_currentInputSequenceNo].isJumping;
+            _isJumping = playerInput.isJumping;
 
-            ((PlayerInputHandler)_controller.OperationHandlers[1]).PlayerInputs[_networkInterface.PeerId].Remove(_currentInputSequenceNo);
+            ((PlayerInputHandler)_controller.OperationHandlers[1]).PlayerInputs[_networkInterface.PeerId][_currentInputSequenceNo].isACKed = true;
 
             IncrementInputSequenceNo();
         }

@@ -132,7 +132,7 @@ public class PlayerController : MonoBehaviour
 
         if (PhotonEngine.Instance.IsServer)
         {
-            ((PlayerInputHandler)_controller.OperationHandlers[1]).PlayerInputs.Add(peerId, new Dictionary<byte, PlayerInput>());
+            ((PlayerInputHandler)_controller.OperationHandlers[1]).PlayerInputs.Add(peerId, new PlayerInput[256]);
         }
 
         else if (peerId == ((PeerIdHandler)_controller.OperationHandlers[0]).MyPeerId)
@@ -141,7 +141,7 @@ public class PlayerController : MonoBehaviour
 
             _camera.Target = player.transform;
 
-            ((PlayerInputHandler)_controller.OperationHandlers[1]).PlayerInputs.Add(peerId, new Dictionary<byte, PlayerInput>());
+            ((PlayerInputHandler)_controller.OperationHandlers[1]).PlayerInputs.Add(peerId, new PlayerInput[256]);
         }
 
         ((PlayerTransformHandler)_controller.OperationHandlers[2]).PlayerTransforms.Add(peerId, new PlayerTransform());

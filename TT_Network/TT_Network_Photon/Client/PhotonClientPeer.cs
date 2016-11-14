@@ -28,7 +28,7 @@ namespace TT_Network_Photon.Client
 
         public byte CurrentInputSequenceNo { get; set; }
 
-        public Dictionary<byte, PlayerSnapshotInput> PlayerInputs { get; set; }
+        public PlayerSnapshotInput[] PlayerInputs { get; set; }
 
         public PhotonServerPeer CurrentServer { get; set; }
 
@@ -57,7 +57,7 @@ namespace TT_Network_Photon.Client
 
             PlayerData = new PlayerData();
 
-            PlayerInputs = new Dictionary<byte, PlayerSnapshotInput>();
+            PlayerInputs = new PlayerSnapshotInput[256];
         }
 
         protected override void OnOperationRequest(OperationRequest operationRequest, SendParameters sendParameters)
@@ -144,14 +144,14 @@ namespace TT_Network_Photon.Client
 
                 byte currentInputSequenceNo = _server.ConnectionCollection.Clients[peerId].CurrentInputSequenceNo;
 
-                Dictionary<byte, PlayerSnapshotInput> playerInputs = _server.ConnectionCollection.Clients[peerId].PlayerInputs;
+                PlayerSnapshotInput playerInputs = _server.ConnectionCollection.Clients[peerId].PlayerInputs[currentInputSequenceNo];
 
-                if (playerInputs.ContainsKey(currentInputSequenceNo))
+                if (playerInputs.isValid)
                 {
-                    float powerInput = playerInputs[currentInputSequenceNo].powerInput;
-                    float turnInput = playerInputs[currentInputSequenceNo].turnInput;
+                    float powerInput = playerInputs.powerInput;
+                    float turnInput = playerInputs.turnInput;
 
-                    bool isJumping = playerInputs[currentInputSequenceNo].isJumping;
+                    bool isJumping = playerInputs.isJumping;
 
                     int nextInputSequenceNoTemp = currentInputSequenceNo + 1;
 
@@ -160,21 +160,21 @@ namespace TT_Network_Photon.Client
 
                     _server.ConnectionCollection.Clients[peerId].CurrentInputSequenceNo = (byte)nextInputSequenceNoTemp;
 
-                    _server.ConnectionCollection.Clients[peerId].PlayerInputs.Remove(currentInputSequenceNo);
+                    _server.ConnectionCollection.Clients[peerId].PlayerInputs[currentInputSequenceNo].isValid = false;
 
                     OperationResponse operationResponse = new OperationResponse();
 
                     operationResponse.OperationCode = 3;
                     operationResponse.ReturnCode = 0;
                     operationResponse.Parameters = new Dictionary<byte, object>()
-                    {
-                        { 0, 1 },
-                        { 1, peerId.ToByteArray() },
-                        { 2, currentInputSequenceNo },
-                        { 3, powerInput },
-                        { 4, turnInput },
-                        { 5, isJumping }
-                    };
+                {
+                    { 0, 1 },
+                    { 1, peerId.ToByteArray() },
+                    { 2, currentInputSequenceNo },
+                    { 3, powerInput },
+                    { 4, turnInput },
+                    { 5, isJumping }
+                };
 
                     SendOperationResponse(operationResponse, sendParameters);
                 }
@@ -188,21 +188,16 @@ namespace TT_Network_Photon.Client
 
                 PlayerSnapshotInput playerInput = new PlayerSnapshotInput();
 
+                playerInput.isValid = true;
+
                 playerInput.powerInput = (float)operationRequest.Parameters[2];
                 playerInput.turnInput = (float)operationRequest.Parameters[3];
+
                 playerInput.isJumping = (bool)operationRequest.Parameters[4];
 
-                Log.DebugFormat("{0}|{1},{2},{3}", sequenceNo, playerInput.powerInput, playerInput.turnInput, playerInput.isJumping);
+                //Log.DebugFormat("{0}|{1},{2},{3}", sequenceNo, playerInput.powerInput, playerInput.turnInput, playerInput.isJumping);
 
-                if (PlayerInputs.ContainsKey(sequenceNo))
-                {
-                    PlayerInputs[sequenceNo] = playerInput;
-                }
-
-                else
-                {
-                    PlayerInputs.Add(sequenceNo, playerInput);
-                }
+                PlayerInputs[sequenceNo] = playerInput;
 
                 OperationResponse operationResponse = new OperationResponse();
 
