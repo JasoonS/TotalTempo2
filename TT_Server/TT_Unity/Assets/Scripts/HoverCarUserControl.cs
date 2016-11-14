@@ -18,9 +18,11 @@ public class HoverCarUserControl : MonoBehaviour
 
     private bool _isJumping = false;
 
-    private uint _updateTickThreshold = 60;
+    private uint _updateTickInputThreshold = 10;
+    private uint _updateTickTransformThreshold = 60;
 
-    private uint _updateTick = 60;
+    private uint _updateTickInput = 10;
+    private uint _updateTickTransform = 60;
 
     public void Start()
     {
@@ -44,19 +46,25 @@ public class HoverCarUserControl : MonoBehaviour
 
     public void FixedUpdate()
     {
-        ++_updateTick;
+        ++_updateTickInput;
+        ++_updateTickTransform;
 
         if (PhotonEngine.Instance.IsServer)
         {
             // SERVER_SIDE.
 
-            _networkInterface.RequestClientInputs();
+            if (_updateTickInput > _updateTickInputThreshold)
+            {
+                _updateTickInput = 0;
+
+                _networkInterface.RequestClientInputs();
+            }
 
             UpdateInputs();
 
-            if (_updateTick > _updateTickThreshold)
+            if (_updateTickTransform > _updateTickTransformThreshold)
             {
-                _updateTick = 0;
+                _updateTickTransform = 0;
 
                 _networkInterface.SendServerTransform();
             }
@@ -66,8 +74,10 @@ public class HoverCarUserControl : MonoBehaviour
         {
             // CLIENT_SIDE.
 
-            if (_updateTick > _updateTickThreshold)
+            if (_updateTickTransform > _updateTickTransformThreshold)
             {
+                _updateTickTransform = 0;
+
                 _networkInterface.RequestServerTransform();
 
                 UpdateTransform();
@@ -86,7 +96,12 @@ public class HoverCarUserControl : MonoBehaviour
 
             IncrementInputSequenceNo();
 
-            SendInputs();
+            if (_updateTickInput > _updateTickInputThreshold)
+            {
+                _updateTickInput = 0;
+
+                SendInputs();
+            }
         }
 
         _hoverMotor.Move(_powerInput, _turnInput);
