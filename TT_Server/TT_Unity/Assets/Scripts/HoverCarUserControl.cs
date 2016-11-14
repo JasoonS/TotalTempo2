@@ -126,10 +126,14 @@ public class HoverCarUserControl : MonoBehaviour
 
     private void SendInputs()
     {
+        Debug.Log("***********************************************************************************************************************");
+
         Dictionary<byte, PlayerInput> playerInputs = ((PlayerInputHandler)_controller.OperationHandlers[1]).PlayerInputs[_networkInterface.PeerId];
 
         foreach (KeyValuePair<byte, PlayerInput> sequenceInputPair in playerInputs)
         {
+            Debug.LogFormat("{0}|{1},{2},{3}", sequenceInputPair.Key, _powerInput, _turnInput, _isJumping);
+
             _networkInterface.SendClientInputs(sequenceInputPair.Key, _powerInput, _turnInput, _isJumping);
         }
     }
