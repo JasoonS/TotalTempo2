@@ -12,7 +12,9 @@ public class PhotonEngine : MonoBehaviour, IPhotonPeerListener
 
     private bool _isServer;
 
-    private uint _updateTick = 0;
+    private uint _updateTickThreshold = 2;
+
+    private uint _updateTick = 2;
 
     public PhotonPeer Peer { get { return _peer; } protected set { _peer = value; } }
     public GameState State { get { return _state; } protected set { _state = value; } }
@@ -43,7 +45,14 @@ public class PhotonEngine : MonoBehaviour, IPhotonPeerListener
 
     public void FixedUpdate()
     {
-        _state.OnUpdate();
+        ++_updateTick;
+
+        if (_updateTick > _updateTickThreshold)
+        {
+            _updateTick = 0;
+
+            _state.OnUpdate();
+        }
     }
 
     public void Initialise()

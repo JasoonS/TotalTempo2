@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
 
     private uint _updateTickThreshold = 60;
 
-    private uint _updateTick = 0;
+    private uint _updateTick = 60;
 
     public Dictionary<Guid, GameObject> Players { get { return _players; } }
 

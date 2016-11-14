@@ -22,7 +22,7 @@ public class HoverCarUserControl : MonoBehaviour
     private uint _updateTickTransformThreshold = 60;
 
     private uint _updateTickInput = 0;
-    private uint _updateTickTransform = 0;
+    private uint _updateTickTransform = 60;
 
     public void Start()
     {
