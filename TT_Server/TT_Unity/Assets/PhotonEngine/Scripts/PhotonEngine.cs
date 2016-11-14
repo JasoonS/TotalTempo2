@@ -59,7 +59,7 @@ public class PhotonEngine : MonoBehaviour, IPhotonPeerListener
     {
         _peer = new PhotonPeer(this, ConnectionProtocol.Udp);
 
-        _peer.ChannelCount = 2;
+        _peer.ChannelCount = 3;
         _peer.LimitOfUnreliableCommands = 0;
         _peer.SentCountAllowance = 15;
         _peer.DisconnectTimeout = 30000;
