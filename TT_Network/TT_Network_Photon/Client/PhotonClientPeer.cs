@@ -215,9 +215,9 @@ namespace TT_Network_Photon.Client
                     PlayerInputs[sequenceNo] = playerInput;
 
                     sequenceNos[i] = sequenceNo;
-                }
 
-                //Log.DebugFormat("{0}|{1},{2},{3}", sequenceNo, playerInput.powerInput, playerInput.turnInput, playerInput.isJumping);
+                    //Log.DebugFormat("{0}|{1},{2},{3}", sequenceNo, playerInput.powerInput, playerInput.turnInput, playerInput.isJumping);
+                }
 
                 OperationResponse operationResponse = new OperationResponse();
 

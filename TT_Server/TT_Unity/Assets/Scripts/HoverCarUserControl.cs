@@ -57,21 +57,25 @@ public class HoverCarUserControl : MonoBehaviour
         {
             // SERVER_SIDE.
 
-            if (_updateTickInput > _updateTickInputThreshold)
-            {
-                _updateTickInput = 0;
+            //if (_updateTickInput > _updateTickInputThreshold)
+            //{
+            //    _updateTickInput = 0;
 
-                _networkInterface.RequestClientInputs();
-            }
+            //    _networkInterface.RequestClientInputs();
+            //}
+
+            _networkInterface.RequestClientInputs();
 
             UpdateInputs();
 
-            if (_updateTickTransform > _updateTickTransformThreshold)
-            {
-                _updateTickTransform = 0;
+            //if (_updateTickTransform > _updateTickTransformThreshold)
+            //{
+            //    _updateTickTransform = 0;
 
-                _networkInterface.SendServerTransform();
-            }
+            //    _networkInterface.SendServerTransform();
+            //}
+
+            _networkInterface.SendServerTransform();
         }
 
         else
