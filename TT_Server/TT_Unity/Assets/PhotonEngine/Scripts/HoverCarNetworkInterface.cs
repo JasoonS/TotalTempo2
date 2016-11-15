@@ -56,43 +56,30 @@ public class HoverCarNetworkInterface : MonoBehaviour
 
     public void SendClientInputs(Dictionary<byte, PlayerInput> clientInputs)
     {
+        OperationRequest operationRequest = new OperationRequest();
+
+        operationRequest.OperationCode = 4;
+
+        operationRequest.Parameters = new Dictionary<byte, object>();
+
+        byte parameterIndex = 0;
+
         foreach (KeyValuePair<byte, PlayerInput> playerInput in clientInputs)
         {
-            OperationRequest operationRequest = new OperationRequest();
+            ++parameterIndex;
+            operationRequest.Parameters.Add(parameterIndex, playerInput.Key);
 
-            operationRequest.OperationCode = 4;
+            ++parameterIndex;
+            operationRequest.Parameters.Add(parameterIndex, playerInput.Value.powerInput);
 
-            operationRequest.Parameters = new Dictionary<byte, object>()
-            {
-                { 1, playerInput.Key },
-                { 2, playerInput.Value.powerInput },
-                { 3, playerInput.Value.turnInput },
-                { 4, playerInput.Value.isJumping },
-            };
+            ++parameterIndex;
+            operationRequest.Parameters.Add(parameterIndex, playerInput.Value.turnInput);
 
-            PhotonEngine.Instance.SendOp(operationRequest, false, 0, false);
+            ++parameterIndex;
+            operationRequest.Parameters.Add(parameterIndex, playerInput.Value.isJumping);
         }
 
-        //operationRequest.Parameters = new Dictionary<byte, object>();
-
-        //byte parameterIndex = 0;
-
-        //foreach (KeyValuePair<byte, PlayerInput> playerInput in clientInputs)
-        //{
-        //    ++parameterIndex;
-        //    operationRequest.Parameters.Add(parameterIndex, playerInput.Key);
-
-        //    ++parameterIndex;
-        //    operationRequest.Parameters.Add(parameterIndex, playerInput.Value.powerInput);
-
-        //    ++parameterIndex;
-        //    operationRequest.Parameters.Add(parameterIndex, playerInput.Value.turnInput);
-
-        //    ++parameterIndex;
-        //    operationRequest.Parameters.Add(parameterIndex, playerInput.Value.isJumping);
-        //}
-
-        //PhotonEngine.Instance.SendOp(operationRequest, false, 0, false);
+        PhotonEngine.Instance.SendOp(operationRequest, false, 0, false);
     }
 
     // Server-side request to update server-side transform (OPERATION_CODE_2).
