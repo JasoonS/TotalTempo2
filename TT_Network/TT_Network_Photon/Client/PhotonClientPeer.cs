@@ -139,6 +139,8 @@ namespace TT_Network_Photon.Client
                 playerData.zRotation = (float)operationRequest.Parameters[7];
 
                 _server.ConnectionCollection.Clients[peerId].PlayerData = playerData;
+
+                //Log.DebugFormat("{0},{1},{2}|{3},{4},{5}", playerData.xPosition, playerData.yPosition, playerData.zPosition, playerData.xRotation, playerData.yRotation, playerData.zRotation);
             }
 
             // Server-side request to receive server-side inputs (OPERATION_CODE_3).

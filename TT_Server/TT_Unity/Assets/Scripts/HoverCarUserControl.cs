@@ -22,7 +22,7 @@ public class HoverCarUserControl : MonoBehaviour
     private uint _updateTickTransformThreshold = 60;
 
     private uint _updateTickInput = 10;
-    private uint _updateTickTransform = 60;
+    private uint _updateTickTransform = 10;
 
     public void Start()
     {
@@ -88,7 +88,7 @@ public class HoverCarUserControl : MonoBehaviour
 
                 _networkInterface.RequestServerTransform();
 
-                //UpdateTransform();
+                UpdateTransform();
             }
 
             if (_updateTickInput > _updateTickInputThreshold)
