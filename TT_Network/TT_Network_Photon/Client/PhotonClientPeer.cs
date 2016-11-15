@@ -165,7 +165,7 @@ namespace TT_Network_Photon.Client
 
                 int playerInputNo = 0;
 
-                while (playerInput.isValid)
+                while ((playerInput.isValid) && (((playerInputNo * 4) + 5) < 255))
                 {
                     float powerInput = playerInput.powerInput;
                     float turnInput = playerInput.turnInput;
@@ -174,10 +174,12 @@ namespace TT_Network_Photon.Client
 
                     _server.ConnectionCollection.Clients[peerId].PlayerInputs[currentInputSequenceNo].isValid = false;
 
-                    operationResponse.Parameters.Add((byte)((playerInputNo * 4) + 2), currentInputSequenceNo);
-                    operationResponse.Parameters.Add((byte)((playerInputNo * 4) + 3), powerInput);
-                    operationResponse.Parameters.Add((byte)((playerInputNo * 4) + 4), turnInput);
-                    operationResponse.Parameters.Add((byte)((playerInputNo * 4) + 5), isJumping);
+                    int playerInputBlock = playerInputNo * 4;
+
+                    operationResponse.Parameters.Add((byte)(playerInputBlock + 2), currentInputSequenceNo);
+                    operationResponse.Parameters.Add((byte)(playerInputBlock + 3), powerInput);
+                    operationResponse.Parameters.Add((byte)(playerInputBlock + 4), turnInput);
+                    operationResponse.Parameters.Add((byte)(playerInputBlock + 5), isJumping);
 
                     currentInputSequenceNo = (byte)IncrementInputSequenceNo(currentInputSequenceNo);
 

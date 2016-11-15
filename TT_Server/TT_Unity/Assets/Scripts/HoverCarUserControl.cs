@@ -19,7 +19,7 @@ public class HoverCarUserControl : MonoBehaviour
     private bool _isJumping = false;
 
     private uint _updateTickInputThreshold = 10;
-    private uint _updateTickTransformThreshold = 60;
+    private uint _updateTickTransformThreshold = 10;
 
     private uint _updateTickInput = 10;
     private uint _updateTickTransform = 10;
