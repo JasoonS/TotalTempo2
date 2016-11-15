@@ -79,7 +79,7 @@ public class PlayerController : MonoBehaviour
 
                 operationRequest.OperationCode = 0;
 
-                PhotonEngine.Instance.SendOp(operationRequest, false, 1, false);
+                PhotonEngine.Instance.SendOp(operationRequest, false, 2, false);
             }
 
             List<Guid> peerIds = ((PeerIdHandler)_controller.OperationHandlers[0]).PeerIds;

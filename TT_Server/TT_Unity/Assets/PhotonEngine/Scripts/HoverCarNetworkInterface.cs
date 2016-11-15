@@ -49,7 +49,7 @@ public class HoverCarNetworkInterface : MonoBehaviour
             { 1, PeerId.ToByteArray() }
         };
 
-        PhotonEngine.Instance.SendOp(operationRequest, false, 0, false);
+        PhotonEngine.Instance.SendOp(operationRequest, false, 1, false);
     }
 
     // Client-side request to update server-side inputs (OPERATION_CODE_4).
@@ -113,6 +113,6 @@ public class HoverCarNetworkInterface : MonoBehaviour
             { 7, transform.rotation.eulerAngles.z }
         };
 
-        PhotonEngine.Instance.SendOp(operationRequest, false, 0, false);
+        PhotonEngine.Instance.SendOp(operationRequest, false, 1, false);
     }
 }
