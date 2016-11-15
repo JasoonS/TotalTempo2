@@ -12,7 +12,9 @@ public class TokenSpawner : MonoBehaviour
     public Material Yellow;
     public Material Red;
 
-    public float SpawnRadius;
+    public int NumberTokensToSpawn = 100;
+
+    //public float SpawnRadius;
 
     private int _numTokensSpawned = 0;
 
@@ -30,7 +32,7 @@ public class TokenSpawner : MonoBehaviour
     Colours[] ColourList =
     {
         Colours.GREEN,
-        Colours.BLUE,
+        //Colours.BLUE,
         Colours.YELLOW,
         Colours.RED
     };
@@ -55,39 +57,43 @@ public class TokenSpawner : MonoBehaviour
         }
     }
 
-    void Start()
+    public static void SpawnTokens()
     {
-        float sr = SpawnRadius;
+        Instance.Tokens = new List<Token>(Instance.NumberTokensToSpawn);
 
-        Tokens = new List<Token>((int)(PathFinder.Instance.TotalLength / (sr * 2)) * NumberOfCollectables);
-
-        _numTokensSpawned = 0;
+        Instance._numTokensSpawned = 0;
 
         //TODO:: hardcoded for now. Fix script execution order to allow the read of spawnRadius on TokenSpawner.
-
-        for (float dist = 0; dist < PathFinder.Instance.TotalLength; dist += SpawnRadius * 2)
-        {
-            spawnTokensArroundCentre(PathFinder.Instance.GetRoutePosition(dist + 1));
-        }
-
+        CurveImplementation.SetTokenPositions(Instance.NumberTokensToSpawn);
     }
 
-    public void spawnTokensArroundCentre(Vector3 centre)
+    void Start()
     {
-        for (int i = 0; i < NumberOfCollectables; i++)
-        {
-            float rotationVariance = Random.Range(-Mathf.PI / NumberOfCollectables, Mathf.PI / NumberOfCollectables);
-
-            Vector3 spawnCentre = centre + new Vector3(
-                Mathf.Sin((Mathf.PI * 2 / NumberOfCollectables) * i + rotationVariance),
-                0.0f,
-                Mathf.Cos((Mathf.PI * 2 / NumberOfCollectables) * i + rotationVariance)
-            ) * SpawnRadius * Random.Range(0.3f, 1)
-            + new Vector3(0, 2.0f, 0);
-
-            Tokens.Add(new Token(spawnCentre, ColourList[_numTokensSpawned % ColourList.Length], _numTokensSpawned++));
-        }
+        // TODO:: call this static method from elsewhere - it seems it has to be called after TokenSpawner has 'started'.
+        SpawnTokens();
     }
+
+    public static void SpawnTokensAtPoint(Vector3 centre)
+    {
+        Instance.Tokens.Add(new Token(centre, Instance.ColourList[Instance._numTokensSpawned % Instance.ColourList.Length], Instance._numTokensSpawned++));
+    }
+
+    //public void spawnTokensArroundCentre(Vector3 centre)
+    //{
+    //    for (int i = 0; i < NumberOfCollectables; i++)
+    //    {
+    //        float rotationVariance = Random.Range(-Mathf.PI / NumberOfCollectables, Mathf.PI / NumberOfCollectables);
+
+    //        Vector3 spawnCentre = centre + new Vector3(
+    //            Mathf.Sin((Mathf.PI * 2 / NumberOfCollectables) * i + rotationVariance),
+    //            0.0f,
+    //            Mathf.Cos((Mathf.PI * 2 / NumberOfCollectables) * i + rotationVariance)
+    //        ) * SpawnRadius * Random.Range(0.3f, 1)
+    //        + new Vector3(0, 2.0f, 0);
+
+    //        Tokens.Add(new Token(spawnCentre, ColourList[_numTokensSpawned % ColourList.Length], _numTokensSpawned++));
+    //    }
+    //}
 
     public static void RemoveWithId(int id)
     {

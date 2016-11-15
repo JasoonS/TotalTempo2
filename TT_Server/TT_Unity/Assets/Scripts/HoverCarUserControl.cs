@@ -18,11 +18,11 @@ public class HoverCarUserControl : MonoBehaviour
 
     private bool _isJumping = false;
 
-    private uint _updateTickInputThreshold = 10;
-    private uint _updateTickTransformThreshold = 10;
+    private uint _updateTickInputThreshold = 2;
+    private uint _updateTickTransformThreshold = 2;
 
-    private uint _updateTickInput = 10;
-    private uint _updateTickTransform = 10;
+    private uint _updateTickInput = 2;
+    private uint _updateTickTransform = 2;
 
     public void Start()
     {
@@ -99,12 +99,12 @@ public class HoverCarUserControl : MonoBehaviour
             }
         }
 
-        _hoverMotor.Move(_powerInput, _turnInput);
+        //_hoverMotor.Move(_powerInput, _turnInput);
 
-        if (_isJumping)
-        {
-            _hoverMotor.Jump();
-        }
+        //if (_isJumping)
+        //{
+        //    _hoverMotor.Jump();
+        //}
     }
 
     // Method to increment the sequence number (with ROLLOVER).
@@ -123,7 +123,7 @@ public class HoverCarUserControl : MonoBehaviour
 
     private void GetPlayerInputs()
     {
-        _powerInput = Input.GetAxis("Vertical");
+        _powerInput = _powerInput = Input.GetAxis("Xbox360ControllerTriggersF") - Input.GetAxis("Xbox360ControllerTriggersB");
         _turnInput = Input.GetAxis("Horizontal");
 
         _isJumping = Input.GetButtonDown("Jump");

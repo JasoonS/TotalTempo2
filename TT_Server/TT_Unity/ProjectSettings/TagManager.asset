@@ -8,6 +8,8 @@ TagManager:
   - Collectable
   - BarFillOne
   - BarFillTwo
+  - TrackDropDown
+  - GameOverMenu
   layers:
   - Default
   - TransparentFX

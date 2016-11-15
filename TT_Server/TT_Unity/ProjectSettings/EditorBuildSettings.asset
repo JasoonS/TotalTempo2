@@ -30,4 +30,12 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/SampleScenes/Scenes/RollerBall.unity
   - enabled: 1
+    path: Assets/Scenes/Menu.unity
+  - enabled: 0
     path: Assets/Scenes/testScene_Ludi.unity
+  - enabled: 0
+    path: Assets/Scenes/testScene_MAIN.unity
+  - enabled: 0
+    path: Assets/Scenes/testNoMenu.unity
+  - enabled: 1
+    path: Assets/Scenes/MAIN.unity

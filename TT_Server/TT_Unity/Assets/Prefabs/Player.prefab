@@ -444,7 +444,7 @@ Transform:
   m_GameObject: {fileID: 148002}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 3}
+  m_LocalScale: {x: 3, y: 3, z: -3}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 495586}
@@ -653,7 +653,7 @@ Rigidbody:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 148002}
   serializedVersion: 2
-  m_Mass: 500
+  m_Mass: 5
   m_Drag: 4
   m_AngularDrag: 4
   m_UseGravity: 1
@@ -726,13 +726,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d645e3fa6a91f4aecb5e3f19f9d7efac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HoverForce: 10000
-  HoverHeight: 3
-  AirTimeGravity: 100
-  Speed: 20000
-  BackwardsSpeed: 10000
-  TurnSpeed: 8000
-  JumpThrust: 500000
+  HoverForce: 100
+  HoverHeight: 4
+  FloatHeight: 12
+  Speed: 200
+  BackwardsSpeed: 100
+  TurnSpeed: 80
+  MaxDrag: 4
+  TrackSuction: 4
+  JumpThrust: 5000
   Thrusters:
   - {fileID: 422298}
   - {fileID: 449594}
@@ -740,10 +742,11 @@ MonoBehaviour:
   - {fileID: 422776}
   MaxSpeed: 36.80006
   Centre: {fileID: 458596}
-  Body: {fileID: 490040}
   _setToSpawn: 0
-  id: Player
-  isPlayer: 1
+  _id: 
+  isPlayer: 0
+  isAI: 0
+  VehicleState: 0
 --- !u!114 &11470820
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -770,8 +773,8 @@ MonoBehaviour:
   _lookAheadForTargetFactor: 0.1
   _lookAheadForSpeedOffset: 10
   _lookAheadForSpeedFactor: 0.2
-  _progressStyle: 0
   _pointToPointThreshold: 4
+  _progressStyle: 0
   Target: {fileID: 455386}
 --- !u!1001 &100100000
 Prefab:

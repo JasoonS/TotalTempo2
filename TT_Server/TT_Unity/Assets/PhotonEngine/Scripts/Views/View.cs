@@ -46,9 +46,9 @@ public abstract class View : MonoBehaviour, IView
             Debug.Log(message);
         }
 
-        if (SceneManager.GetActiveScene() != SceneManager.GetSceneAt(0))
+        if (SceneManager.GetActiveScene() != SceneManager.GetSceneAt(1))
         {
-            SceneManager.LoadScene(0);
+            SceneManager.LoadScene(1);
         }
     }
 

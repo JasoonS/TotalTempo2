@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿// Class to control an AI racing agent.
+
+using UnityEngine;
 
 public class HoverCarAIControl : MonoBehaviour
 {

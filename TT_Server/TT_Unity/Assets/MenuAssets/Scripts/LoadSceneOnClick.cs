@@ -8,6 +8,4 @@ public class LoadSceneOnClick : MonoBehaviour {
 	{
 		SceneManager.LoadScene (sceneIndex);
 	}
-
-
 }

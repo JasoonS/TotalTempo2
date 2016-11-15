@@ -35,7 +35,7 @@ public class HoverCarUserControlOffline : MonoBehaviour
 
     private void GetPlayerInputs()
     {
-        _powerInput = Input.GetAxis("Vertical");
+        _powerInput = Input.GetAxis("Xbox360ControllerTriggersF") - Input.GetAxis("Xbox360ControllerTriggersB");
         _turnInput = Input.GetAxis("Horizontal");
 
         _isJumping = Input.GetButtonDown("Jump");

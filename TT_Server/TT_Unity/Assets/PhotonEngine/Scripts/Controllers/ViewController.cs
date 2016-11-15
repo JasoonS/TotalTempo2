@@ -26,7 +26,7 @@ public class ViewController: IViewController
 
         if (PhotonEngine.Instance == null)
         {
-            SceneManager.LoadScene(0);
+            SceneManager.LoadScene(1);
         }
 
         else
